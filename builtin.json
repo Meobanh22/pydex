@@ -1,0 +1,899 @@
+[
+  {
+    "name": "abs",
+    "params": [
+      {
+        "name": "number",
+        "order_index": 1
+      }
+    ],
+    "description": "The `abs()` function returns the non‑negative magnitude of a given number—whether an integer, float, complex (as its modulus), or any object that defines an `__abs__` method."
+  },
+  {
+    "name": "aiter",
+    "params": [
+      {
+        "name": "async_iterable",
+        "order_index": 1
+      }
+    ],
+    "description": "The `aiter()` function returns an asynchronous iterator by invoking the `__aiter__` method of a given asynchronous iterable, providing a simple way to obtain an async iterator without supporting a two‑argument form."
+  },
+  {
+    "name": "all",
+    "params": [
+      {
+        "name": "iterable",
+        "order_index": 1
+      }
+    ],
+    "description": "The `all()` function returns True when every element in the given iterable evaluates as true (or when the iterable is empty), and False otherwise."
+  },
+  {
+    "name": "anext",
+    "params": [
+      {
+        "name": "async_iterator",
+        "order_index": 1
+      }
+    ],
+    "description": "`anext()` is an async version of `next()` that returns an awaitable which, when awaited, yields the next item from an asynchronous iterator or a provided default if the iterator is exhausted."
+  },
+  {
+    "name": "any",
+    "params": [
+      {
+        "name": "iterable",
+        "order_index": 1
+      }
+    ],
+    "description": "The `any()` function returns True if at least one element in the given iterable evaluates as true, and returns False when the iterable is empty or all its elements are false."
+  },
+  {
+    "name": "ascii",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "The ascii() function returns a printable string representation of an object like repr() but escapes any non‑ASCII characters using \\x, \\u, or \\U escape sequences."
+  },
+  {
+    "name": "bin",
+    "params": [
+      {
+        "name": "integer",
+        "order_index": 1
+      }
+    ],
+    "description": "The bin() function converts an integer (or any object implementing __index__) into its binary representation string, optionally prefixed with “0b”."
+  },
+  {
+    "name": "bool",
+    "params": [
+      {
+        "name": "object = False",
+        "order_index": 1
+      }
+    ],
+    "description": "The bool() function converts its argument to a Boolean value, returning False if the argument is falsey or omitted and True otherwise."
+  },
+  {
+    "name": "breakpoint",
+    "params": [
+      {
+        "name": "* args",
+        "order_index": 1
+      },
+      {
+        "name": "** kws",
+        "order_index": 2
+      }
+    ],
+    "description": "The breakpoint() function invokes sys.breakpointhook() (defaulting to pdb.set_trace()) to pause execution and enter a debugger at the call site, allowing the debugger implementation to be customized via environment variables or by replacing the hook."
+  },
+  {
+    "name": "func-bytearray",
+    "params": [
+      {
+        "name": "source = b''",
+        "order_index": 1
+      }
+    ],
+    "description": "It creates and returns a mutable sequence of byte values, optionally initializing it from a string (with encoding), a length, a buffer, an iterable of integers, or leaving it empty."
+  },
+  {
+    "name": "func-bytes",
+    "params": [
+      {
+        "name": "source = b''",
+        "order_index": 1
+      }
+    ],
+    "description": "The `func-bytes()` function creates and returns an immutable bytes object representing a sequence of integer values (0–255) based on the given input, analogous to constructing a `bytes` object from the same arguments as `bytearray()`."
+  },
+  {
+    "name": "callable",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "The callable() function checks whether a given object can be invoked like a function, returning True if it appears callable (including classes and objects with a __call__ method) and False otherwise."
+  },
+  {
+    "name": "chr",
+    "params": [
+      {
+        "name": "codepoint",
+        "order_index": 1
+      }
+    ],
+    "description": "chr() converts an integer Unicode code point (0–1,114,111) into the corresponding one‑character string, raising ValueError for out‑of‑range values."
+  },
+  {
+    "name": "classmethod",
+    "params": [],
+    "description": "`classmethod()` decorates a function so it receives the class (instead of an instance) as its first argument, allowing it to be invoked on the class or any of its subclasses."
+  },
+  {
+    "name": "compile",
+    "params": [
+      {
+        "name": "source",
+        "order_index": 1
+      },
+      {
+        "name": "filename",
+        "order_index": 2
+      },
+      {
+        "name": "mode",
+        "order_index": 3
+      },
+      {
+        "name": "flags = 0",
+        "order_index": 4
+      },
+      {
+        "name": "dont_inherit = False",
+        "order_index": 5
+      },
+      {
+        "name": "optimize = -1",
+        "order_index": 6
+      }
+    ],
+    "description": "The `compile()` function transforms a source string, byte string, or AST object into a code object (or AST) that can be executed with `exec()` or `eval()`, allowing specification of filename, compilation mode, optional flags, inheritance behavior, and optimization level, and raising errors for invalid code."
+  },
+  {
+    "name": "complex",
+    "params": [
+      {
+        "name": "number = 0",
+        "order_index": 1
+      }
+    ],
+    "description": "The `complex()` function converts a string or numeric value (or separate real and imaginary parts) into a Python complex number, handling various formats and delegating to an object’s `__complex__`, `__float__`, or `__index__` methods when needed."
+  },
+  {
+    "name": "delattr",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      },
+      {
+        "name": "name",
+        "order_index": 2
+      }
+    ],
+    "description": "The `delattr()` function removes a specified attribute from an object, acting like the statement `del object.attribute` by taking the object and the attribute name as arguments."
+  },
+  {
+    "name": "func-dict",
+    "params": [
+      {
+        "name": "** kwargs",
+        "order_index": 1
+      }
+    ],
+    "description": "The `func-dict()` function creates and returns a new empty dictionary object of the built‑in `dict` class."
+  },
+  {
+    "name": "dir",
+    "params": [],
+    "description": "The dir() function returns a sorted list of attribute names for the current local scope when called without arguments, or for a given object—using its __dir__ method if available, otherwise gathering names from its __dict__, type, and inheritance hierarchy—to provide a convenient, though not exhaustive, overview of accessible identifiers."
+  },
+  {
+    "name": "divmod",
+    "params": [
+      {
+        "name": "a",
+        "order_index": 1
+      },
+      {
+        "name": "b",
+        "order_index": 2
+      }
+    ],
+    "description": "The divmod() function takes two numbers and returns a tuple containing the integer quotient and the remainder of their division, following the same rules as the // and % operators for both integers and floats."
+  },
+  {
+    "name": "enumerate",
+    "params": [
+      {
+        "name": "iterable",
+        "order_index": 1
+      },
+      {
+        "name": "start = 0",
+        "order_index": 2
+      }
+    ],
+    "description": "enumerate() creates an iterator that yields pairs of a running index (starting from a given value, default 0) and each element from the given iterable."
+  },
+  {
+    "name": "func-eval",
+    "params": [
+      {
+        "name": "source",
+        "order_index": 1
+      },
+      {
+        "name": "globals = None",
+        "order_index": 3
+      },
+      {
+        "name": "locals = None",
+        "order_index": 4
+      }
+    ],
+    "description": "The `func‑eval()` function evaluates a given Python expression (or compiled code object) using optional global and local namespaces and returns its result, while warning that executing untrusted code is insecure."
+  },
+  {
+    "name": "index-2",
+    "params": [
+      {
+        "name": "source",
+        "order_index": 1
+      },
+      {
+        "name": "globals = None",
+        "order_index": 3
+      },
+      {
+        "name": "locals = None",
+        "order_index": 4
+      },
+      {
+        "name": "closure = None",
+        "order_index": 6
+      }
+    ],
+    "description": "The function `index-2()` dynamically executes a provided Python code string or code object using `exec`, optionally within specified global and local namespaces, and returns `None`."
+  },
+  {
+    "name": "filter",
+    "params": [
+      {
+        "name": "function",
+        "order_index": 1
+      },
+      {
+        "name": "iterable",
+        "order_index": 2
+      }
+    ],
+    "description": "The filter() function creates an iterator yielding only those items from an iterable that satisfy a given predicate function (or are truthy when the function is None)."
+  },
+  {
+    "name": "float",
+    "params": [
+      {
+        "name": "number = 0.0",
+        "order_index": 1
+      }
+    ],
+    "description": "The float() function converts a numeric value or a suitably formatted string into a Python floating‑point number, returning 0.0 when called without arguments and raising an error for invalid or out‑of‑range inputs."
+  },
+  {
+    "name": "index-4",
+    "params": [
+      {
+        "name": "value",
+        "order_index": 1
+      },
+      {
+        "name": "format_spec = ''",
+        "order_index": 2
+      }
+    ],
+    "description": "It formats a given value according to an optional format specification string, delegating to the value’s __format__ method and defaulting to str(value) when no spec is provided."
+  },
+  {
+    "name": "func-frozenset",
+    "params": [
+      {
+        "name": "iterable = ()",
+        "order_index": 1
+      }
+    ],
+    "description": "The function creates and returns an immutable frozenset, optionally populating it with elements from a given iterable."
+  },
+  {
+    "name": "getattr",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      },
+      {
+        "name": "name",
+        "order_index": 2
+      }
+    ],
+    "description": "getattr() returns the value of a named attribute of an object, optionally providing a default to return instead of raising an AttributeError when the attribute does not exist."
+  },
+  {
+    "name": "globals",
+    "params": [],
+    "description": "`globals()` returns a dictionary representing the current module’s global symbol table, reflecting the namespace that was established when the function was defined and stays constant regardless of where the function is later called."
+  },
+  {
+    "name": "hasattr",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      },
+      {
+        "name": "name",
+        "order_index": 2
+      }
+    ],
+    "description": "hasattr() checks whether a given object possesses an attribute with a specified name, returning True if it exists and False otherwise."
+  },
+  {
+    "name": "hash",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "The hash() function computes an integer hash value for an object (if it provides one) to enable fast key comparisons in dictionary lookups, ensuring that equal values share the same hash while truncating the result to the host machine’s word size."
+  },
+  {
+    "name": "help",
+    "params": [],
+    "description": "The built-in help() function launches Python’s interactive documentation system, displaying information about modules, functions, classes, methods, keywords, or any object, or starts an interactive help prompt when called without arguments."
+  },
+  {
+    "name": "hex",
+    "params": [
+      {
+        "name": "integer",
+        "order_index": 1
+      }
+    ],
+    "description": "The hex() function takes an integer (or an object implementing __index__) and returns its value as a lowercase hexadecimal string prefixed with “0x”, handling negative numbers with a leading “‑”."
+  },
+  {
+    "name": "id",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "The `id()` function returns a unique, constant integer representing an object’s identity (its memory address in CPython) that remains unchanged for the object’s lifetime, though the same value may be reused for different objects after they are destroyed."
+  },
+  {
+    "name": "input",
+    "params": [],
+    "description": "The `input()` function optionally displays a prompt, reads a line from standard input, strips the trailing newline, returns the resulting string, and raises EOFError on end‑of‑file."
+  },
+  {
+    "name": "int",
+    "params": [
+      {
+        "name": "number = 0",
+        "order_index": 1
+      }
+    ],
+    "description": "The int() function creates and returns an integer object by converting a numeric value, a string (optionally with a specified base), or an object defining __int__ or __index__, defaulting to 0 when called without arguments."
+  },
+  {
+    "name": "isinstance",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      },
+      {
+        "name": "classinfo",
+        "order_index": 2
+      }
+    ],
+    "description": "`isinstance()` checks whether a given object belongs to a specified type (or any type in a tuple/union of types) and returns True if it does, otherwise False, raising TypeError only when the type argument is invalid."
+  },
+  {
+    "name": "issubclass",
+    "params": [
+      {
+        "name": "class",
+        "order_index": 1
+      },
+      {
+        "name": "classinfo",
+        "order_index": 2
+      }
+    ],
+    "description": "issubclass() checks whether a given class (including itself) is a subclass—direct, indirect, or virtual—of a specified class, tuple of classes, or Union type, returning True if it matches any and raising a TypeError otherwise."
+  },
+  {
+    "name": "iter",
+    "params": [
+      {
+        "name": "iterable",
+        "order_index": 1
+      }
+    ],
+    "description": "The iter() function creates an iterator from a collection or, when given a callable and sentinel, repeatedly calls the callable until its result matches the sentinel, at which point it stops."
+  },
+  {
+    "name": "len",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "The `len()` function returns the number of items in a sequence or collection, raising an OverflowError if the length exceeds `sys.maxsize`."
+  },
+  {
+    "name": "func-list",
+    "params": [
+      {
+        "name": "iterable = ()",
+        "order_index": 1
+      }
+    ],
+    "description": "The `func‑list()` function creates and returns a new mutable list object, optionally initializing it with the elements of an iterable passed as an argument."
+  },
+  {
+    "name": "locals",
+    "params": [],
+    "description": "`locals()` returns a mutable mapping of the current local variable names to their values, allowing inspection and (in most scopes) direct modification of those locals."
+  },
+  {
+    "name": "map",
+    "params": [
+      {
+        "name": "function",
+        "order_index": 1
+      },
+      {
+        "name": "iterable",
+        "order_index": 2
+      },
+      {
+        "name": "* iterables",
+        "order_index": 4
+      },
+      {
+        "name": "strict = False",
+        "order_index": 5
+      }
+    ],
+    "description": "The `map()` function returns an iterator that applies a given function to each item of one or more iterables in parallel, yielding the results and stopping at the shortest iterable unless `strict=True` forces a ValueError when any iterable is exhausted early."
+  },
+  {
+    "name": "max",
+    "params": [
+      {
+        "name": "iterable",
+        "order_index": 1
+      },
+      {
+        "name": "key = None",
+        "order_index": 4
+      }
+    ],
+    "description": "The max() function returns the greatest element from a given iterable or the greatest of multiple arguments, optionally using a key function for ordering and a default value for empty iterables."
+  },
+  {
+    "name": "func-memoryview",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "The function `func-memoryview()` creates and returns a memoryview object that provides a read‑only or writable view onto the underlying buffer of the supplied argument."
+  },
+  {
+    "name": "min",
+    "params": [
+      {
+        "name": "iterable",
+        "order_index": 1
+      },
+      {
+        "name": "key = None",
+        "order_index": 4
+      }
+    ],
+    "description": "The min() function returns the smallest element from an iterable or the smallest of given arguments, optionally using a key function for ordering and a default value for empty iterables."
+  },
+  {
+    "name": "next",
+    "params": [
+      {
+        "name": "iterator",
+        "order_index": 1
+      }
+    ],
+    "description": "The `next()` function returns the subsequent element from an iterator by invoking its `__next__()` method, optionally providing a default value to return instead of raising a `StopIteration` when the iterator is exhausted."
+  },
+  {
+    "name": "object",
+    "params": [],
+    "description": "The built‑in `object()` function creates a minimal, feature‑less instance of Python’s ultimate base class, which provides the common methods shared by all objects and cannot be given arguments or have arbitrary attributes added."
+  },
+  {
+    "name": "oct",
+    "params": [
+      {
+        "name": "integer",
+        "order_index": 1
+      }
+    ],
+    "description": "The oct() function converts an integer (or any object defining __index__) into its octal representation as a string prefixed with “0o”."
+  },
+  {
+    "name": "index-7",
+    "params": [
+      {
+        "name": "file",
+        "order_index": 1
+      },
+      {
+        "name": "mode = 'r'",
+        "order_index": 2
+      },
+      {
+        "name": "buffering = -1",
+        "order_index": 3
+      },
+      {
+        "name": "encoding = None",
+        "order_index": 4
+      },
+      {
+        "name": "errors = None",
+        "order_index": 5
+      },
+      {
+        "name": "newline = None",
+        "order_index": 6
+      },
+      {
+        "name": "closefd = True",
+        "order_index": 7
+      },
+      {
+        "name": "opener = None",
+        "order_index": 8
+      }
+    ],
+    "description": "The function opens a specified file (or file descriptor) in a given mode, returning a corresponding file object and raising an OSError if the file cannot be opened."
+  },
+  {
+    "name": "ord",
+    "params": [
+      {
+        "name": "character",
+        "order_index": 1
+      }
+    ],
+    "description": "The ord() function returns the integer Unicode code point of a single-character string or the byte value of a length‑1 bytes/bytearray object."
+  },
+  {
+    "name": "pow",
+    "params": [
+      {
+        "name": "base",
+        "order_index": 1
+      },
+      {
+        "name": "exp",
+        "order_index": 2
+      },
+      {
+        "name": "mod = None",
+        "order_index": 3
+      }
+    ],
+    "description": "The pow() function computes base**exp, optionally returning the result modulo mod and handling negative exponents, floats, and complex results according to Python’s numeric coercion rules."
+  },
+  {
+    "name": "print",
+    "params": [
+      {
+        "name": "* objects",
+        "order_index": 1
+      },
+      {
+        "name": "sep = ' '",
+        "order_index": 2
+      },
+      {
+        "name": "end = '\\n'",
+        "order_index": 3
+      },
+      {
+        "name": "file = None",
+        "order_index": 4
+      },
+      {
+        "name": "flush = False",
+        "order_index": 5
+      }
+    ],
+    "description": "The `print()` function outputs one or more objects as strings to a text stream (defaulting to standard output), separating them with a specified separator, ending with a specified terminator, optionally directing the output to a given file-like object and flushing the stream if requested."
+  },
+  {
+    "name": "property",
+    "params": [
+      {
+        "name": "fget = None",
+        "order_index": 1
+      },
+      {
+        "name": "fset = None",
+        "order_index": 2
+      },
+      {
+        "name": "fdel = None",
+        "order_index": 3
+      },
+      {
+        "name": "doc = None",
+        "order_index": 4
+      }
+    ],
+    "description": "`property()` creates a descriptor that manages attribute access by linking optional getter, setter, and deleter functions (and an optional docstring) to a class attribute, enabling controlled read, write, and delete operations."
+  },
+  {
+    "name": "property.getter",
+    "params": [],
+    "description": "`property.getter()` returns a new property object that uses the given function as the getter while preserving any existing setter and deleter behavior."
+  },
+  {
+    "name": "property.setter",
+    "params": [],
+    "description": "`property.setter()` defines a method that allows assigning a value to a read‑only property, enabling custom behavior when the property is set on an instance."
+  },
+  {
+    "name": "property.deleter",
+    "params": [],
+    "description": "`property.deleter()` creates a new property object identical to the original but with its deleter method set to the decorated function, allowing the property to define custom behavior when the attribute is deleted."
+  },
+  {
+    "name": "property.__name__",
+    "params": [],
+    "description": "`property.__name__()` returns the current attribute name assigned to a property object, allowing you to retrieve or modify the property's identifier at runtime."
+  },
+  {
+    "name": "func-range",
+    "params": [
+      {
+        "name": "stop",
+        "order_index": 1
+      }
+    ],
+    "description": "The `range()` function generates an immutable sequence of integers specified by start, stop, and step parameters, allowing efficient iteration without storing all values in memory."
+  },
+  {
+    "name": "repr",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "`repr()` returns a printable string representation of an object, typically one that can be passed to `eval()` to recreate the object, or a descriptive placeholder if that isn’t possible."
+  },
+  {
+    "name": "reversed",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "The `reversed()` function returns an iterator that yields the elements of a sequence or any object with a __reversed__ method in reverse order."
+  },
+  {
+    "name": "round",
+    "params": [
+      {
+        "name": "number",
+        "order_index": 1
+      },
+      {
+        "name": "ndigits = None",
+        "order_index": 2
+      }
+    ],
+    "description": "The `round()` function returns a number rounded to the specified number of decimal places (or to the nearest integer if no precision is given), using “round‑to‑even” tie‑breaking and delegating to an object’s `__round__` method when applicable."
+  },
+  {
+    "name": "func-set",
+    "params": [
+      {
+        "name": "iterable = ()",
+        "order_index": 1
+      }
+    ],
+    "description": "The function creates and returns a new set object, optionally initializing it with elements drawn from a given iterable."
+  },
+  {
+    "name": "setattr",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      },
+      {
+        "name": "name",
+        "order_index": 2
+      },
+      {
+        "name": "value",
+        "order_index": 3
+      }
+    ],
+    "description": "setattr(obj, name, value) dynamically assigns the given value to the attribute named by the string on the specified object, functioning like obj.name = value but allowing any attribute name."
+  },
+  {
+    "name": "slice",
+    "params": [
+      {
+        "name": "stop",
+        "order_index": 1
+      }
+    ],
+    "description": "The `slice()` function creates a slice object that encapsulates start, stop, and step values for indexing sequences, enabling the same behavior as the `a[start:stop:step]` syntax and allowing these parameters to be stored, passed, and later applied to sequence objects."
+  },
+  {
+    "name": "slice.start",
+    "params": [],
+    "description": "`slice.start` is a read‑only attribute that stores the start index supplied when the slice object was created, used by NumPy and other libraries to interpret the slice but having no additional behavior."
+  },
+  {
+    "name": "sorted",
+    "params": [
+      {
+        "name": "iterable",
+        "order_index": 1
+      },
+      {
+        "name": "key = None",
+        "order_index": 4
+      },
+      {
+        "name": "reverse = False",
+        "order_index": 5
+      }
+    ],
+    "description": "sorted() creates and returns a new list containing the elements of an iterable ordered according to optional key and reverse parameters while preserving the original order of equal elements."
+  },
+  {
+    "name": "staticmethod",
+    "params": [],
+    "description": "staticmethod() converts a regular function into a static method that can be called on a class or its instances without receiving an implicit self or cls argument."
+  },
+  {
+    "name": "func-str",
+    "params": [
+      {
+        "name": "encoding = 'utf-8'",
+        "order_index": 2
+      },
+      {
+        "name": "errors = 'strict'",
+        "order_index": 3
+      }
+    ],
+    "description": "The function `func_str()` returns a string representation of the given object, mirroring the behavior of Python’s built‑in `str()` function."
+  },
+  {
+    "name": "sum",
+    "params": [
+      {
+        "name": "iterable",
+        "order_index": 1
+      },
+      {
+        "name": "start = 0",
+        "order_index": 3
+      }
+    ],
+    "description": "The `sum()` function adds a specified start value to each element of an iterable (typically numeric) from left to right and returns the total."
+  },
+  {
+    "name": "super",
+    "params": [],
+    "description": "super() returns a proxy that delegates attribute and method lookups to the next class in the method resolution order, enabling calls to overridden superclass implementations and supporting cooperative multiple inheritance."
+  },
+  {
+    "name": "func-tuple",
+    "params": [
+      {
+        "name": "iterable = ()",
+        "order_index": 1
+      }
+    ],
+    "description": "It creates an immutable tuple object containing the given elements, providing a fixed‑size, ordered sequence."
+  },
+  {
+    "name": "type",
+    "params": [
+      {
+        "name": "object",
+        "order_index": 1
+      }
+    ],
+    "description": "The `type()` function either returns the type object of a given value when called with one argument, or dynamically creates a new class when provided with a name, base‑class tuple, and attribute dictionary as three arguments."
+  },
+  {
+    "name": "vars",
+    "params": [],
+    "description": "The vars() function returns an object’s __dict__ attribute (or, when called without arguments, behaves like locals()), enabling inspection or modification of the namespace for objects that expose a mutable dictionary."
+  },
+  {
+    "name": "zip",
+    "params": [
+      {
+        "name": "* iterables",
+        "order_index": 1
+      },
+      {
+        "name": "strict = False",
+        "order_index": 2
+      }
+    ],
+    "description": "zip() lazily pairs elements from multiple iterables into tuples, stopping at the shortest input unless strict=True is used to require equal lengths."
+  },
+  {
+    "name": "import__",
+    "params": [
+      {
+        "name": "name",
+        "order_index": 1
+      },
+      {
+        "name": "globals = None",
+        "order_index": 2
+      },
+      {
+        "name": "locals = None",
+        "order_index": 3
+      },
+      {
+        "name": "fromlist = ()",
+        "order_index": 4
+      },
+      {
+        "name": "level = 0",
+        "order_index": 5
+      }
+    ],
+    "description": "`__import__()` is the low‑level built‑in function invoked by the import statement that loads a module (optionally using globals, locals, from‑list and relative level) and returns either the top‑level package or the requested module, but its direct use is discouraged in favor of `importlib.import_module()`."
+  }
+]

@@ -72,7 +72,10 @@ def fetch_bultin_docs():
         dd=dl.find("dd")
         params = extra_params(dt.get_text(" ",strip=True)) if dt else []
         description = clean_text(dd.get_text(" ",strip=True)) if dd else ""
-        description = summarize_description(func_id,description)
+        try:
+            description = summarize_description(func_id, description)
+        except Exception as e:
+            print(f"{func_id}: {e}")
         time.sleep(1)
 
         result.append({

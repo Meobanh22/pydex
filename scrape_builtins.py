@@ -42,11 +42,24 @@ def extra_params(sig):
     sig = sig[sig.index("(")+1:sig.rindex(")")]
     parts = [p.strip() for p in sig.split(",")]
     params = []
-    for i,p in enumerate(parts,1):
+    idx = 1
+    for p in parts:
         if p in ("/","*","**",""):
             continue
+        required=True
+        if p.startswith("[") and p.endswith("]"):
+            p = p[1:-1].strip()
+            required = False
+        elif "=" in p:
+            name, default = p.split('=',1)
+            name = name.strip()
+            default = default.strip().strip("'\"")
+            required = False
         else:
-            params.append({"name": p,"order_index": i})
+            name = p
+            default = None  
+        params.append({"name": name,"default_value": default,"required": required,"order_index": idx})
+        idx+=1
     return params
 def get_id(dl):
     if dl.get("id"):
@@ -55,21 +68,28 @@ def get_id(dl):
     if dt and dt.get("id"):
         return dt["id"]
     return None
+
+def clean_name(name):
+    if name.startswith("func-"):
+        return name[len("func-"):]
+    return name
+
 def fetch_bultin_docs():
     resp = requests.get(DOCS_URL)
     resp.raise_for_status()
 
     soup = BeautifulSoup(resp.content, "html.parser")
-    blocks =soup.select("dl.py")
+    blocks = soup.select("dl.py")
     result = []
 
     for dl in blocks:
         func_id = get_id(dl)
         if not func_id:
             continue
+        func_id = clean_name(func_id)
 
-        dt=dl.find("dt")
-        dd=dl.find("dd")
+        dt = dl.find("dt")
+        dd = dl.find("dd")
         params = extra_params(dt.get_text(" ",strip=True)) if dt else []
         description = clean_text(dd.get_text(" ",strip=True)) if dd else ""
         try:

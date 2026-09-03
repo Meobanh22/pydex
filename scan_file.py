@@ -1,0 +1,39 @@
+import ast
+import builtins
+import sys
+from db import get_connection
+
+def find_builtin_call(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        tree = ast.parse(f.read())
+    builtins_name = set(dir(builtins))
+    found = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            func_name = node.func.id
+            if func_name in builtins_name:
+                found.add(func_name)
+    return found
+def lookup_and_mark(names, conn):
+    with conn.cursor() as cur:
+        for name in names:
+            cur.execute("SELECT id,discovered FROM functions WHERE name = %s", (name,))
+            row = cur.fetchone()
+            if row:
+                func_id, discovered = row
+                if not discovered:
+                    cur.execute("UPDATE functions SET discovered = TRUE WHERE id = %s", (func_id,))
+                    print(f"'{name}' is discovered!")
+            else:
+                print(f"Function '{name}' not found.")
+    conn.commit()
+if __name__ == "__main__":
+    if len(sys.argv) <2:
+        print("Usage: python scan_file.py <file_path>") 
+        sys.exit(1)
+    file_path = sys.argv[1]
+    result = find_builtin_call(file_path)
+    conn = get_connection()
+    lookup_and_mark(result, conn)
+    conn.close()
+    print("Scan completed.")

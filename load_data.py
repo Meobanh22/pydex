@@ -5,8 +5,8 @@ def load_functions(docs, conn):
     with conn.cursor() as cur:
         for item in docs:
             cur.execute("""
-                INSERT INTO functions (name, official_docstring) VALUES (%s, %s)
-                ON CONFLICT (name) DO UPDATE SET official_docstring = EXCLUDED.official_docstring
+                INSERT INTO functions (name, description) VALUES (%s, %s)
+                ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description
                 RETURNING id
             """, (item["name"], item["description"]))
 

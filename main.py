@@ -13,23 +13,39 @@ def cmd_scan(file_path):
     conn.close()
     print("Scan completed!")
 
-def cmd_search(function_name):
+def cmd_search(args):
     conn = get_connection()
     with conn.cursor() as cur:
-        cur.execute("""SELECT f.id, f.name, f.description, a.name, a.default_value, a.required, a.order_index
+        if args.by_arg:
+            query = """SELECT f.id, f.name, f.description, a.name, a.default_value, a.required, a.order_index
                     FROM functions f INNER JOIN arguments a ON f.id=a.function_id
-                    WHERE f.name=%s AND f.discovered=True
-                    ORDER BY a.order_index""", (function_name,))
+                    WHERE a.name ILIKE %s AND f.discovered=True
+                    ORDER BY f.id, a.order_index"""
+            params = [args.function_name] 
+        else:
+            name_condition = "f.name ILIKE %s" if args.partial else "f.name = %s"
+            search_value = f"%{args.function_name}%" if args.partial else args.function_name
+            query = f"""SELECT f.id, f.name, f.description, a.name, a.default_value, a.required, a.order_index
+                        FROM functions f INNER JOIN arguments a ON f.id=a.function_id
+                        WHERE {name_condition} AND f.discovered=True"""
+            if args.required:
+                query += " AND a.required=True"
+            query += " ORDER BY f.id, a.order_index"
+            params = [search_value]
+        cur.execute(query, params)
         rows = cur.fetchall()
         if rows:
-            print(f"Function(id: {rows[0][0]}): {rows[0][1]}")
-            print(f"Description: {rows[0][2]}")
-            print("Arguments:")
-            print("   Name   | Default Value | Required | Order Index ")
+            current_function_id = 0
             for row in rows:
+                if row[0] != current_function_id:
+                    current_function_id = row[0]
+                    print(f"\nFunction(id: {row[0]}): {row[1]}")
+                    print(f"Description: {row[2]}")
+                    print("Arguments:")
+                    print("   Name   | Default Value | Required | Order Index ")
                 print(f"{safe_str(row[3]):^10}|{safe_str(row[4]):^15}|{safe_str(row[5]):^10}|{safe_str(row[6]):^13}")
         else:
-            print(f"Function '{function_name}' not found or not discovered.")
+            print(f"Function '{args.function_name}' not found or not discovered.")
     conn.close()
 
 def cmd_open_pydex():
@@ -47,9 +63,28 @@ def cmd_open_pydex():
             print("No discovered built-in functions found.")
     conn.close()
 
+def cmd_delete_function(args):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        if args.all:
+            print("Are you sure you want to delete all functions from the database (y/n)?")
+            response = input().lower()
+            if response == "y":
+                cur.execute("Update functions SET discovered=False, my_note=NULL")
+                print("All functions deleted from the database.")
+        else:
+            cur.execute("Update functions SET discovered=False, my_note=NULL WHERE name=%s", (args.function_name,))
+            if cur.rowcount > 0:
+                print(f"Function '{args.function_name}' deleted from the database.")
+            else:
+                print(f"Function '{args.function_name}' not found in the database.")
+        conn.commit()
+    conn.close()
+
 def main():
     parser = argparse.ArgumentParser(prog="pydex", description="Scan a Python file for built-in function calls.")
     subparsers = parser.add_subparsers(dest="command")
+    # open command
     pydex_parser = subparsers.add_parser("open", help="Open pydex")
     # scan command
     scan_parser = subparsers.add_parser("scan", help="Scan a Python file to find built-in functions.")
@@ -57,18 +92,27 @@ def main():
     # search command
     search_parser = subparsers.add_parser("search", help="Search for a built-in function in the database.")
     search_parser.add_argument("function_name", help="Name of the built-in function to search for.")
+    search_parser.add_argument("-p", "--partial", action="store_true", help="Enable partial search for function names.")
+    search_parser.add_argument("-r", "--required", action="store_true", help="Filter results to show only required arguments.")
+    search_parser.add_argument("--by-arg", action="store_true", help="Search by argument name instead of function name.")
+    # delete command
+    delete_parser = subparsers.add_parser("delete", help="Delete a built-in function from the database.")
+    delete_parser.add_argument("function_name", action="store_true", help="Name of the built-in function to delete.")
+    delete_parser.add_argument("-a", "--all", action="store_true", help="Delete all functions in the database.")
 
     args = parser.parse_args()
 
     if args.command == "scan":
-        file_path = args.file_path
-        cmd_scan(file_path)
+        cmd_scan(args.file_path)
 
     elif args.command == "search":
-        function_name = args.function_name
-        cmd_search(function_name)
+        cmd_search(args)
 
     elif args.command == "open":
         cmd_open_pydex()
+
+    elif args.command == "delete":
+        cmd_delete_function(args)
+
 if __name__ == "__main__":
     main()

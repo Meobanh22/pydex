@@ -1,0 +1,25 @@
+[project]
+name = "pydex"
+version = "1.0"
+description = "Builtin python functions"
+requires-python = ">=3.13"
+authors = [
+    { name = "Meobanh" }
+]
+dependencies = [
+    "beautifulsoup4",
+    "groq",
+    "psycopg2-binary",
+    "python-dotenv",
+    "requests",
+]
+
+[project.scripts]
+pydex = "main:main"
+
+[tool.setuptools]
+py-modules = ["db", "load_data", "main", "scan_file", "scrape_builtins"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

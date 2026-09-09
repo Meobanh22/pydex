@@ -8,17 +8,30 @@ def safe_str(value, default="N/A"):
 
 def cmd_scan(file_path):
     result = find_builtin_call(file_path)
-    conn = get_connection()
+    if result is None:
+        return
+    if not result:
+        print("No built-in functions found in file")
+        return
+    try:
+        conn = get_connection()
+    except Exception as e:
+        print(f"Can't connect to database: {e}")
+        return
     lookup_and_mark(result, conn)
     conn.close()
     print("Scan completed!")
 
 def cmd_search(args):
-    conn = get_connection()
+    try:
+        conn = get_connection()
+    except Exception as e:
+        print(f"Can't connect to database: {e}")
+        return
     with conn.cursor() as cur:
         if args.by_arg:
             query = """SELECT f.id, f.name, f.description, a.name, a.default_value, a.required, a.order_index
-                    FROM functions f INNER JOIN arguments a ON f.id=a.function_id
+                    FROM functions f LEFT JOIN arguments a ON f.id=a.function_id
                     WHERE a.name ILIKE %s AND f.discovered=True
                     ORDER BY f.id, a.order_index"""
             params = [args.function_name] 
@@ -26,7 +39,7 @@ def cmd_search(args):
             name_condition = "f.name ILIKE %s" if args.partial else "f.name = %s"
             search_value = f"%{args.function_name}%" if args.partial else args.function_name
             query = f"""SELECT f.id, f.name, f.description, a.name, a.default_value, a.required, a.order_index
-                        FROM functions f INNER JOIN arguments a ON f.id=a.function_id
+                        FROM functions f LEFT JOIN arguments a ON f.id=a.function_id
                         WHERE {name_condition} AND f.discovered=True"""
             if args.required:
                 query += " AND a.required=True"
@@ -43,13 +56,20 @@ def cmd_search(args):
                     print(f"Description: {row[2]}")
                     print("Arguments:")
                     print("   Name   | Default Value | Required | Order Index ")
-                print(f"{safe_str(row[3]):^10}|{safe_str(row[4]):^15}|{safe_str(row[5]):^10}|{safe_str(row[6]):^13}")
+                if row[3] is not None:
+                    print(f"{safe_str(row[3]):^10}|{safe_str(row[4]):^15}|{safe_str(row[5]):^10}|{safe_str(row[6]):^13}")
+                else:
+                    print("   (No arguments)")
         else:
             print(f"Function '{args.function_name}' not found or not discovered.")
     conn.close()
 
 def cmd_open_pydex():
-    conn = get_connection()
+    try:
+        conn = get_connection()
+    except Exception as e:
+        print(f"Can't connect to database: {e}")
+        return
     with conn.cursor() as cur:
         cur.execute("""SELECT id, name FROM functions
                     WHERE discovered=True
@@ -64,20 +84,26 @@ def cmd_open_pydex():
     conn.close()
 
 def cmd_delete_function(args):
-    conn = get_connection()
+    try:
+        conn = get_connection()
+    except Exception as e:
+        print(f"Can't connect to database: {e}")
+        return
     with conn.cursor() as cur:
         if args.all:
             print("Are you sure you want to delete all functions from the database (y/n)?")
             response = input().lower()
             if response == "y":
-                cur.execute("Update functions SET discovered=False, my_note=NULL")
+                cur.execute("Update functions SET discovered=False, my_notes=NULL")
                 print("All functions deleted from the database.")
-        else:
-            cur.execute("Update functions SET discovered=False, my_note=NULL WHERE name=%s", (args.function_name,))
+        elif args.function_name:
+            cur.execute("Update functions SET discovered=False, my_notes=NULL WHERE name=%s", (args.function_name,))
             if cur.rowcount > 0:
                 print(f"Function '{args.function_name}' deleted from the database.")
             else:
                 print(f"Function '{args.function_name}' not found in the database.")
+        else:
+            print("Please add a function name")
         conn.commit()
     conn.close()
 
@@ -97,7 +123,7 @@ def main():
     search_parser.add_argument("--by-arg", action="store_true", help="Search by argument name instead of function name.")
     # delete command
     delete_parser = subparsers.add_parser("delete", help="Delete a built-in function from the database.")
-    delete_parser.add_argument("function_name", action="store_true", help="Name of the built-in function to delete.")
+    delete_parser.add_argument("function_name", nargs="?", help="Name of the built-in function to delete.")
     delete_parser.add_argument("-a", "--all", action="store_true", help="Delete all functions in the database.")
 
     args = parser.parse_args()
@@ -113,6 +139,9 @@ def main():
 
     elif args.command == "delete":
         cmd_delete_function(args)
+    else:
+        parser.print_help()
+        return
 
 if __name__ == "__main__":
     main()

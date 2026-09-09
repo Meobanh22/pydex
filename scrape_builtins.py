@@ -62,11 +62,15 @@ def extra_params(sig):
         idx+=1
     return params
 def get_id(dl):
-    if dl.get("id"):
-        return dl["id"]
     dt=dl.find("dt")
-    if dt and dt.get("id"):
-        return dt["id"]
+    if dt:
+        sig_name = dt.find(class_="sig-name")
+        if sig_name:
+            return sig_name.get_text(strip=True)
+        if dt.get("id"):
+            return dt["id"]
+    if dl.get("id") and not dl["id"].startswith("index-"):
+        return dl["id"]
     return None
 
 def clean_name(name):

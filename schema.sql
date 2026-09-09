@@ -1,7 +1,7 @@
 CREATE TABLE functions (
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
-    official_docstring TEXT,
+    description TEXT,
     my_notes TEXT,
     discovered BOOLEAN DEFAULT FALSE
 );

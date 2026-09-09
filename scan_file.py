@@ -1,12 +1,24 @@
 import ast
 import builtins
+import inspect
 import sys
 from db import get_connection
 
 def find_builtin_call(file_path):
-    with open(file_path, "r", encoding="utf-8") as f:
-        tree = ast.parse(f.read())
-    builtins_name = set(dir(builtins))
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            tree = ast.parse(f.read())
+    except FileExistsError:
+        print(f"{file_path} does not exist")
+        return
+    except SyntaxError:
+        print(f"{file_path} has syntax error")
+        return
+    builtins_name = {
+        name for name, obj in builtins.__dict__.items()
+        if (inspect.isbuiltin(obj) or inspect.isclass(obj))
+        and not (isinstance(obj, type) and issubclass(obj, BaseException))
+    }
     found = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):

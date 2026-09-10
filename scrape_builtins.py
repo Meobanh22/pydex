@@ -37,6 +37,7 @@ def clean_text(text):
     return text.strip()
 def extra_params(sig):
     sig = clean_text(sig)
+    sig = re.sub(r"(\*+)\s+", r"\1", sig)
     if "(" not in sig or ")" not in sig:
         return []
     sig = sig[sig.index("(")+1:sig.rindex(")")]
@@ -57,7 +58,7 @@ def extra_params(sig):
             required = False
         else:
             name = p
-            default = None  
+            default = None
         params.append({"name": name,"default_value": default,"required": required,"order_index": idx})
         idx+=1
     return params
@@ -92,10 +93,26 @@ def fetch_bultin_docs():
             continue
         func_id = clean_name(func_id)
 
-        dt = dl.find("dt")
+        all_dts = dl.find_all("dt")
+        signatures = []
+        for dt in all_dts:
+            sig_text = dt.get_text(" ", strip=True)
+            if "(" in sig_text and ")" in sig_text:
+                params=extra_params(sig_text)
+                params_str = ", ".join(f"{p['name']}={p['default_value']}" if p['default_value'] else p['name'] for p in params)
+                raw_sig = f"{func_id}({params_str})"
+                signatures.append({
+                    "raw_signature": raw_sig,
+                    "params": params
+                })
+        if not signatures:
+            signatures.append({
+                "raw_signature": f"{func_id}()",
+                "params": []
+            })
         dd = dl.find("dd")
-        params = extra_params(dt.get_text(" ",strip=True)) if dt else []
         description = clean_text(dd.get_text(" ",strip=True)) if dd else ""
+        
         try:
             description = summarize_description(func_id, description)
         except Exception as e:
@@ -104,7 +121,7 @@ def fetch_bultin_docs():
 
         result.append({
             "name": func_id,
-            "params": params,
+            "signatures": signatures,
             "description": description
         })
     return result

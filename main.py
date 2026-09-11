@@ -30,34 +30,39 @@ def cmd_search(args):
         return
     with conn.cursor() as cur:
         if args.by_arg:
-            query = """SELECT f.id, f.name, f.description, a.name, a.default_value, a.required, a.order_index
-                    FROM functions f LEFT JOIN arguments a ON f.id=a.function_id
+            query = """SELECT f.id, f.name, f.description, s.raw_signature, a.name, a.default_value, a.required, a.order_index
+                    FROM functions f LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id
                     WHERE a.name ILIKE %s AND f.discovered=True
-                    ORDER BY f.id, a.order_index"""
+                    ORDER BY f.id, s.raw_signature, a.order_index"""
             params = [args.function_name] 
         else:
             name_condition = "f.name ILIKE %s" if args.partial else "f.name = %s"
             search_value = f"%{args.function_name}%" if args.partial else args.function_name
-            query = f"""SELECT f.id, f.name, f.description, a.name, a.default_value, a.required, a.order_index
-                        FROM functions f LEFT JOIN arguments a ON f.id=a.function_id
+            query = f"""SELECT f.id, f.name, f.description, s.raw_signature, a.name, a.default_value, a.required, a.order_index
+                        FROM functions f LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id 
                         WHERE {name_condition} AND f.discovered=True"""
             if args.required:
                 query += " AND a.required=True"
-            query += " ORDER BY f.id, a.order_index"
+            query += " ORDER BY f.id, s.raw_signature, a.order_index"
             params = [search_value]
         cur.execute(query, params)
         rows = cur.fetchall()
         if rows:
             current_function_id = 0
+            current_sig = ""
             for row in rows:
                 if row[0] != current_function_id:
                     current_function_id = row[0]
+                    current_sig = ""
                     print(f"\nFunction(id: {row[0]}): {row[1]}")
                     print(f"Description: {row[2]}")
-                    print("Arguments:")
-                    print("   Name   | Default Value | Required | Order Index ")
-                if row[3] is not None:
-                    print(f"{safe_str(row[3]):^10}|{safe_str(row[4]):^15}|{safe_str(row[5]):^10}|{safe_str(row[6]):^13}")
+                if row[3] != current_sig:
+                    current_sig = row[3]
+                    print(f"Signature: {row[3]}")
+                    if row[4] is not None:
+                        print("   Name   | Default Value | Required | Order Index ")
+                if row[4] is not None:
+                    print(f"{safe_str(row[4]):^10}|{safe_str(row[5]):^15}|{safe_str(row[6]):^10}|{safe_str(row[7]):^13}")
                 else:
                     print("   (No arguments)")
         else:

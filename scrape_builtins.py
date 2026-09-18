@@ -6,11 +6,11 @@ import re
 import os
 from dotenv import load_dotenv
 from groq import Groq
+from pathlib import Path
 
 DOCS_URL = "https://docs.python.org/3/library/functions.html"
 
-
-load_dotenv(override=True)
+load_dotenv(dotenv_path=Path.home() / ".secrets" / "pydex.env", override=True)
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def summarize_description(name, description):

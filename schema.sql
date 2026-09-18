@@ -1,9 +1,17 @@
-CREATE TABLE functions (
+CREATE TABLE modules (
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE functions (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    module_id INT NOT NULL REFERENCES modules(id) ON DELETE CASCADE,
     description TEXT,
     my_notes TEXT,
-    discovered BOOLEAN DEFAULT FALSE
+    discovered BOOLEAN DEFAULT FALSE,
+    CONSTRAINT uq_func UNIQUE (module_id, name)
 );
 
 CREATE TABLE signatures (

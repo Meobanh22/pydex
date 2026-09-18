@@ -14,7 +14,7 @@
         ]
       }
     ],
-    "description": "The `abs()` function returns the non‑negative magnitude of its argument, whether that argument is an integer, a float, a complex number (returning its modulus), or any object that defines an `__abs__` method."
+    "description": "The `abs()` function returns the non‑negative magnitude of its argument, whether it’s an integer, float, complex number, or any object that defines an `__abs__` method."
   },
   {
     "name": "aiter",
@@ -31,7 +31,7 @@
         ]
       }
     ],
-    "description": "The aiter() function returns an asynchronous iterator by invoking the __aiter__() method of an asynchronous iterable, providing a direct way to obtain an async iterator without supporting a two‑argument form."
+    "description": "The `aiter()` function returns an asynchronous iterator by invoking the `__aiter__` method of a given asynchronous iterable, providing a simple way to obtain an async iterator without supporting a two‑argument form."
   },
   {
     "name": "all",
@@ -48,7 +48,7 @@
         ]
       }
     ],
-    "description": "The `all()` function checks an iterable and returns True only if every element evaluates as true (or if the iterable is empty), otherwise it returns False."
+    "description": "The `all()` function returns True when every element in the given iterable evaluates to true (or when the iterable is empty), otherwise it returns False."
   },
   {
     "name": "anext",
@@ -82,7 +82,7 @@
         ]
       }
     ],
-    "description": "`anext()` asynchronously retrieves the next element from an async iterator (optionally returning a default value if the iterator is exhausted) by awaiting its `__anext__()` method."
+    "description": "`anext()` asynchronously retrieves the next item from an async iterator, optionally returning a default value instead of raising StopAsyncIteration when the iterator is exhausted."
   },
   {
     "name": "any",
@@ -99,7 +99,7 @@
         ]
       }
     ],
-    "description": "The any() function iterates over an iterable and returns True if it encounters at least one truthy element, otherwise it returns False (including when the iterable is empty)."
+    "description": "The any() function iterates through a given iterable and returns True as soon as it encounters a truthy element, otherwise it returns False if no such element is found or the iterable is empty."
   },
   {
     "name": "ascii",
@@ -116,7 +116,7 @@
         ]
       }
     ],
-    "description": "The ascii() function returns a printable string representation of an object like repr(), but with all non‑ASCII characters escaped using \\x, \\u, or \\U sequences."
+    "description": "The ascii() function returns a printable string representation of an object like repr(), but escapes any non‑ASCII characters using \\x, \\u, or \\U escape sequences."
   },
   {
     "name": "bin",
@@ -133,7 +133,7 @@
         ]
       }
     ],
-    "description": "The bin() function converts an integer (or any object defining __index__) into its binary string representation, optionally prefixed with “0b”."
+    "description": "The `bin()` function returns a string representation of an integer in binary form, prefixed with “0b” (or “-0b” for negative values)."
   },
   {
     "name": "bool",
@@ -150,7 +150,7 @@
         ]
       }
     ],
-    "description": "The bool() function converts a given value to its Boolean truth value, returning True for any object that is truthy and False for falsey values (including when no argument is provided)."
+    "description": "The bool() function converts a given value (or no value) to a Boolean, returning True for any truthy input and False for falsey or omitted inputs."
   },
   {
     "name": "breakpoint",
@@ -173,7 +173,7 @@
         ]
       }
     ],
-    "description": "The `breakpoint()` function provides a single-call entry point that invokes `sys.breakpointhook()` (defaulting to `pdb.set_trace()`) to drop execution into a debugger, allowing customization via the `PYTHONBREAKPOINT` environment variable or by overriding the hook."
+    "description": "It drops execution into a debugger at the call site by invoking sys.breakpointhook (defaulting to pdb.set_trace()), allowing configurable debugging without explicit imports."
   },
   {
     "name": "bytearray",
@@ -213,7 +213,7 @@
         ]
       }
     ],
-    "description": "The `bytearray()` function creates a mutable sequence of bytes, optionally initialized from a string (with encoding), a specified size of zero‑filled bytes, a buffer, or an iterable of integers in the 0‑255 range, or returns an empty byte array if no argument is given."
+    "description": "`bytearray()` creates a mutable sequence of byte values (0‑255), optionally initializing it from a string (with encoding), an integer size, a buffer, an iterable of integers, or leaving it empty."
   },
   {
     "name": "bytes",
@@ -253,7 +253,7 @@
         ]
       }
     ],
-    "description": "The `bytes()` function creates an immutable sequence of 0‑255 integer values (a bytes object), interpreting its arguments like `bytearray()` and supporting the same non‑mutating methods, indexing, and slicing."
+    "description": "The `bytes()` function creates an immutable sequence of integer values (0–255) from given input, mirroring `bytearray` behavior but producing a read‑only bytes object."
   },
   {
     "name": "callable",
@@ -270,7 +270,7 @@
         ]
       }
     ],
-    "description": "It checks whether a given object can be invoked like a function, returning True if the object is callable (including classes and objects with a __call__ method) and False otherwise."
+    "description": "callable() checks whether a given object can be invoked like a function, returning True for functions, classes, or instances with a __call__ method and False otherwise."
   },
   {
     "name": "chr",
@@ -287,7 +287,7 @@
         ]
       }
     ],
-    "description": "The chr() function converts an integer Unicode code point (0‑0x10FFFF) into the corresponding one‑character string, raising ValueError for out‑of‑range values."
+    "description": "chr() converts an integer Unicode code point (0‑0x10FFFF) into the corresponding one‑character string, raising ValueError for out‑of‑range values."
   },
   {
     "name": "classmethod",
@@ -297,7 +297,7 @@
         "params": []
       }
     ],
-    "description": "classmethod() decorates a function so it receives the owning class as its first argument, allowing the method to be called on the class or any instance while behaving like a regular method bound to the class."
+    "description": "classmethod() decorates a function so that it receives the owning class as its first argument, allowing it to be invoked on the class or any instance and behave polymorphically across subclasses."
   },
   {
     "name": "compile",
@@ -344,7 +344,7 @@
         ]
       }
     ],
-    "description": "The compile() function transforms a source string, byte string, or AST object into a code object (or AST) that can be executed by exec() or eval(), allowing specification of filename, compilation mode, flags, inheritance behavior, and optimization level."
+    "description": "The `compile()` function transforms source code (as a string, bytes, or AST) into a code object that can be executed with `exec()` or evaluated with `eval()`, allowing specification of filename, mode, compiler flags, inheritance behavior, and optimization level."
   },
   {
     "name": "complex",
@@ -389,7 +389,7 @@
         ]
       }
     ],
-    "description": "The `complex()` function converts a string or numeric input (or separate real and imaginary parts) into a Python complex number, handling various formats and delegating to an object's `__complex__`, `__float__`, or `__index__` methods when needed."
+    "description": "The `complex()` function converts a string or numeric value (or separate real and imaginary parts) into a Python complex number."
   },
   {
     "name": "delattr",
@@ -463,7 +463,7 @@
         ]
       }
     ],
-    "description": "The dict() function constructs and returns a new dictionary object, optionally initializing it from mappings, keyword arguments, or iterable key‑value pairs."
+    "description": "The dict() function constructs and returns a new dictionary object, optionally initializing it from mappings, iterables of key‑value pairs, or keyword arguments."
   },
   {
     "name": "dir",
@@ -484,7 +484,7 @@
         ]
       }
     ],
-    "description": "The dir() function returns a sorted list of the names of attributes available in the current local scope when called without arguments, or the accessible attributes of a given object (using its __dir__ method if present, otherwise gathering from its __dict__, type, and inheritance hierarchy)."
+    "description": "The dir() function returns a sorted list of attribute names for the given object (or, without an argument, for the current local scope), using the object's __dir__ method if present or otherwise gathering names from its __dict__, type, and related bases."
   },
   {
     "name": "divmod",
@@ -507,7 +507,7 @@
         ]
       }
     ],
-    "description": "The divmod() function takes two numbers and returns a tuple containing their integer quotient and remainder, matching the behavior of (a // b, a % b) for integers and providing a floor‑based quotient with a remainder that satisfies the usual division identity for floats."
+    "description": "The divmod() function takes two numbers and returns a two‑element tuple containing the integer quotient and the remainder of the first number divided by the second, adhering to floor division semantics for both integer and floating‑point inputs."
   },
   {
     "name": "enumerate",
@@ -530,7 +530,7 @@
         ]
       }
     ],
-    "description": "The enumerate() function creates an iterator that yields pairs of an index (starting from a specified start value, default 0) and each element from a given iterable."
+    "description": "The enumerate() function returns an iterator that yields pairs of a running index (starting from a specified value, default 0) and each element from a given iterable."
   },
   {
     "name": "eval",
@@ -559,7 +559,7 @@
         ]
       }
     ],
-    "description": "The eval() function parses and evaluates a given Python expression (or compiled code object) using optional global and local namespace mappings and returns the result, while warning that executing untrusted code is insecure."
+    "description": "The eval() function parses and evaluates a Python expression (or compiled code object) using optional global and local namespaces, returning the expression’s result while potentially executing arbitrary code."
   },
   {
     "name": "exec",
@@ -594,7 +594,7 @@
         ]
       }
     ],
-    "description": "exec() dynamically executes a given string or code object as Python statements within optional global and local namespaces, returning None."
+    "description": "The exec() function dynamically executes a given string or code object as Python statements within optional global and local namespaces, returning None."
   },
   {
     "name": "filter",
@@ -617,7 +617,7 @@
         ]
       }
     ],
-    "description": "The filter() function creates an iterator that yields each element from the given iterable for which the provided function returns True, or, if the function is None, yields only the elements that are truthy."
+    "description": "The `filter()` function creates an iterator that yields only those items from a given iterable for which a specified predicate function returns true (or, if the function is None, only the truthy items)."
   },
   {
     "name": "float",
@@ -645,7 +645,7 @@
         ]
       }
     ],
-    "description": "float() converts a given numeric value or properly formatted string—including optional signs, whitespace, exponent, “inf”, or “nan”—into a Python floating‑point number, returning 0.0 when called without an argument and raising OverflowError for values outside the float range."
+    "description": "The `float()` function converts a numeric value or a properly formatted numeric string—including signs, whitespace, exponent notation, infinity, or NaN—into a Python floating‑point number, returning 0.0 when called without an argument and raising an error for invalid or out‑of‑range inputs."
   },
   {
     "name": "format",
@@ -668,7 +668,7 @@
         ]
       }
     ],
-    "description": "The `format()` function returns a string representation of a value according to a given format specification by invoking the value’s type-specific `__format__` method, defaulting to `str(value)` when the specification is empty."
+    "description": "The Python `format()` function returns a string representation of a value according to a given format specification, defaulting to the same output as `str(value)` when the specification is empty."
   },
   {
     "name": "frozenset",
@@ -685,7 +685,7 @@
         ]
       }
     ],
-    "description": "The frozenset() function creates an immutable set object, optionally populated with elements from a given iterable."
+    "description": "The frozenset() function creates an immutable set object that can be initialized with elements from an optional iterable."
   },
   {
     "name": "getattr",
@@ -731,7 +731,7 @@
         ]
       }
     ],
-    "description": "`getattr()` returns the value of a specified attribute from an object, optionally providing a default value instead of raising an AttributeError when the attribute does not exist."
+    "description": "getattr() retrieves the value of a specified attribute from an object, optionally returning a default instead of raising an AttributeError if the attribute does not exist."
   },
   {
     "name": "globals",
@@ -741,7 +741,7 @@
         "params": []
       }
     ],
-    "description": "`globals()` returns the dictionary representing the current module’s global symbol table, providing access to all globally defined names at the point where the function is called."
+    "description": "`globals()` returns a dictionary representing the current module’s global namespace, which is fixed at function definition time and does not change based on where the function is invoked."
   },
   {
     "name": "hasattr",
@@ -781,7 +781,7 @@
         ]
       }
     ],
-    "description": "The Python `hash()` function returns an integer hash value for an object, enabling fast key comparisons in dictionaries and ensuring that numerically equal values share the same hash, with results truncated to the machine’s word size."
+    "description": "The Python `hash()` function returns an integer hash value for an object (if it defines one), enabling fast key comparisons in dictionaries, with equal numeric values yielding the same hash and the result truncated to the host machine’s word size."
   },
   {
     "name": "help",
@@ -802,7 +802,7 @@
         ]
       }
     ],
-    "description": "The built‑in help() function launches Python’s interactive documentation system, displaying a help page for the interpreter, a named object, or any object passed as an argument."
+    "description": "The built‑in `help()` function launches Python’s interactive documentation system, displaying a formatted help page for the interpreter itself, a named module/function/class/keyword, or any object passed as an argument."
   },
   {
     "name": "hex",
@@ -819,7 +819,7 @@
         ]
       }
     ],
-    "description": "The hex() function returns a string representing an integer’s value in lowercase hexadecimal notation prefixed with “0x”, raising an error for non‑int objects unless they implement __index__()."
+    "description": "The hex() function returns a string representation of an integer in lowercase hexadecimal form, prefixed with “0x” and handling negative values with a leading minus sign."
   },
   {
     "name": "id",
@@ -836,7 +836,7 @@
         ]
       }
     ],
-    "description": "The `id()` function returns a unique integer representing an object's identity, which remains constant for the object's lifetime (often its memory address in CPython)."
+    "description": "The built‑in Python function id() returns a unique, constant integer representing an object’s identity (its memory address in CPython) for the duration of its lifetime."
   },
   {
     "name": "input",
@@ -857,7 +857,7 @@
         ]
       }
     ],
-    "description": "The `input()` function optionally displays a prompt, reads a line from standard input, strips the trailing newline, returns it as a string, and raises EOFError if end‑of‑file is encountered."
+    "description": "The input() function optionally displays a prompt, reads a line from standard input, strips the trailing newline, returns the resulting string, and raises EOFError on end‑of‑file."
   },
   {
     "name": "int",
@@ -891,7 +891,7 @@
         ]
       }
     ],
-    "description": "int() creates an integer from a numeric value, a string (optionally with a specified base), or returns 0 when called without arguments, using __int__ or __index__ methods if present."
+    "description": "The int() function creates an integer object by converting a number, string, bytes‑like object, or an object defining __int__ or __index__, optionally using a specified base, and returns 0 when called without arguments."
   },
   {
     "name": "isinstance",
@@ -914,7 +914,7 @@
         ]
       }
     ],
-    "description": "`isinstance()` returns True when a given object is an instance of a specified type (or any type in a tuple or Union) and False otherwise, raising TypeError only if the type argument is invalid."
+    "description": "`isinstance()` returns True when a given object is an instance of a specified type, any subclass of that type, or any type listed in a tuple or Union, and False otherwise, raising a TypeError only if the type argument is invalid."
   },
   {
     "name": "issubclass",
@@ -937,7 +937,7 @@
         ]
       }
     ],
-    "description": "issubclass() returns True if the given class is a direct, indirect, virtual subclass of the specified class or any class within a tuple or Union Type, treating a class as a subclass of itself, otherwise it raises a TypeError."
+    "description": "`issubclass()` determines whether a given class (including itself) is a subclass—directly, indirectly, virtually, or via any entry in a tuple or Union type—of the specified class or classes, returning True if so and raising a TypeError otherwise."
   },
   {
     "name": "iter",
@@ -971,7 +971,7 @@
         ]
       }
     ],
-    "description": "The iter() function creates an iterator either from an iterable object (or sequence) when called with one argument or from a callable that repeatedly produces values until a specified sentinel value is returned, at which point iteration stops."
+    "description": "The `iter()` function creates an iterator either from an iterable object (or sequence) when called with one argument, or from a callable that repeatedly produces values until a specified sentinel value is returned, at which point iteration stops."
   },
   {
     "name": "len",
@@ -988,7 +988,7 @@
         ]
       }
     ],
-    "description": "The len() function returns the number of elements in a sequence or collection, raising OverflowError if the length exceeds sys.maxsize."
+    "description": "The `len()` function returns the total number of elements contained in a sequence or collection, such as strings, lists, tuples, ranges, dictionaries, sets, or frozen sets."
   },
   {
     "name": "list",
@@ -1005,7 +1005,7 @@
         ]
       }
     ],
-    "description": "The list() callable constructs a new mutable sequence (list) from an iterable or creates an empty list when called without arguments."
+    "description": "The `list()` callable constructs and returns a new mutable list object, optionally initializing it with elements from an iterable."
   },
   {
     "name": "locals",
@@ -1015,7 +1015,7 @@
         "params": []
       }
     ],
-    "description": "locals() returns a mapping of the current local symbol table, reflecting variable names and their bound objects, and in optimized scopes provides a snapshot dictionary that isn’t written back to actual locals."
+    "description": "locals() returns a mapping object of the current local symbol table, providing access to the names and values of local variables (and in most scopes allowing those bindings to be inspected and modified)."
   },
   {
     "name": "map",
@@ -1050,7 +1050,7 @@
         ]
       }
     ],
-    "description": "The `map()` function returns an iterator that applies a given function to each element of one or more iterables in parallel, yielding the results and optionally raising a ValueError if any iterable is exhausted before the others when `strict=True`."
+    "description": "The map() function returns an iterator that applies a given function to each element (or parallel elements from multiple iterables) of the provided iterable(s), yielding the results and optionally enforcing strict length matching."
   },
   {
     "name": "max",
@@ -1125,7 +1125,7 @@
         ]
       }
     ],
-    "description": "The max() function returns the greatest element from a single iterable or the greatest of multiple provided arguments, optionally using a key function for ordering and a default value for empty iterables."
+    "description": "The `max()` function returns the greatest element from an iterable or among given arguments, optionally using a key function for ordering and a default value for empty iterables."
   },
   {
     "name": "memoryview",
@@ -1142,7 +1142,7 @@
         ]
       }
     ],
-    "description": "memoryview() creates a lightweight object that provides a read‑only or writable view of an existing object's binary data without copying it, allowing direct byte‑wise access and manipulation."
+    "description": "`memoryview()` creates a lightweight, sliceable view of an existing buffer object that lets you access and manipulate its binary data without copying it."
   },
   {
     "name": "min",
@@ -1217,7 +1217,7 @@
         ]
       }
     ],
-    "description": "The `min()` function returns the smallest element from an iterable or the smallest of given arguments, optionally using a key function for ordering and a default value to return when the iterable is empty."
+    "description": "The min() function returns the smallest element from an iterable or the smallest among given arguments, optionally using a key function for ordering and a default value for empty iterables."
   },
   {
     "name": "next",
@@ -1251,7 +1251,7 @@
         ]
       }
     ],
-    "description": "The `next()` function fetches the upcoming element from an iterator by invoking its `__next__()` method, returning a provided default value if the iterator is exhausted, otherwise raising `StopIteration`."
+    "description": "The `next()` function obtains the subsequent element from an iterator by invoking its `__next__()` method, returning a provided default value if the iterator is exhausted instead of raising `StopIteration`."
   },
   {
     "name": "object",
@@ -1278,7 +1278,7 @@
         ]
       }
     ],
-    "description": "The oct() function takes an integer (or any object with an __index__ method) and returns its octal representation as a string prefixed with “0o”."
+    "description": "The oct() function returns a string representing an integer in octal notation, prefixed with “0o”, and works for any object defining an __index__() method."
   },
   {
     "name": "open",
@@ -1337,7 +1337,7 @@
         ]
       }
     ],
-    "description": "The built‑in `open()` function opens a file (or file descriptor) with a specified mode, encoding, buffering, and other options, returning a corresponding file object for reading, writing, or both, and raises an OSError if the operation fails."
+    "description": "The open() function opens a file (or file descriptor) with a specified mode, returning a corresponding file object for reading, writing, or appending, and raises an OSError if the operation fails."
   },
   {
     "name": "ord",
@@ -1354,7 +1354,7 @@
         ]
       }
     ],
-    "description": "The ord() function returns the integer Unicode code point of a single-character string or the numeric byte value of a one‑byte bytes or bytearray object."
+    "description": "The ord() function returns the integer Unicode code point (or byte value for a single-byte object) corresponding to a given one-character string or a length‑1 bytes/bytearray."
   },
   {
     "name": "pow",
@@ -1383,7 +1383,7 @@
         ]
       }
     ],
-    "description": "The pow() function computes base raised to the exponent, optionally performing modular exponentiation efficiently when a third mod argument is provided, handling type coercion, negative exponents, and returning floats, complex numbers, or modular inverses as appropriate."
+    "description": "pow() computes base raised to the exponent, optionally returning the result modulo a third integer argument, handling floats, negatives, and modular inverses according to Python’s numeric coercion rules."
   },
   {
     "name": "print",
@@ -1424,7 +1424,7 @@
         ]
       }
     ],
-    "description": "The print() function converts given objects to strings, writes them to a text stream (defaulting to sys.stdout) separated by a specified separator and terminated by a specified end string, optionally flushing the stream."
+    "description": "The print() function outputs one or more objects as text to a specified stream (defaulting to sys.stdout), converting each to a string, separating them with the optional sep string, ending with the optional end string, and optionally flushing the stream."
   },
   {
     "name": "property",
@@ -1459,7 +1459,7 @@
         ]
       }
     ],
-    "description": "`property()` creates a descriptor that links attribute access, assignment, and deletion on a class to custom getter, setter, and deleter functions, optionally providing a docstring, enabling managed or read‑only attributes."
+    "description": "The `property()` function creates a descriptor that binds optional getter, setter, and deleter callables (and an optional docstring) to an attribute name, enabling managed attribute access via attribute syntax."
   },
   {
     "name": "getter",
@@ -1469,7 +1469,7 @@
         "params": []
       }
     ],
-    "description": "The `getter()` function retrieves and returns a specific value or object from a data source, encapsulating the access logic for reuse."
+    "description": "The `getter()` function simply returns the current value of the variable it is designed to access."
   },
   {
     "name": "setter",
@@ -1479,7 +1479,7 @@
         "params": []
       }
     ],
-    "description": "The `setter()` function assigns a given value to a specified attribute or key within an object, dictionary, or similar data structure, optionally performing validation or transformation before storing the value."
+    "description": "The `setter()` function assigns a new value to a specified attribute of an object, optionally handling validation or side‑effects before updating the attribute."
   },
   {
     "name": "deleter",
@@ -1489,7 +1489,7 @@
         "params": []
       }
     ],
-    "description": "The `deleter()` method creates a new property object identical to the original but with its delete accessor (`fdel`) replaced by the decorated function, enabling custom deletion behavior for the property."
+    "description": "The `deleter()` method creates and returns a new property object identical to the original but with its delete accessor (`fdel`) replaced by the function supplied to the decorator, enabling custom deletion behavior for the property."
   },
   {
     "name": "__name__",
@@ -1499,7 +1499,7 @@
         "params": []
       }
     ],
-    "description": "`__name__` is a special attribute that holds the identifier of a module, class, or function, allowing the code to determine its own name (e.g., to distinguish between being run as a script or imported) and can be modified at runtime."
+    "description": "`__name__` is a special attribute that stores the identifier of a module, class, or function, allowing its name to be inspected or modified at runtime."
   },
   {
     "name": "range",
@@ -1539,7 +1539,7 @@
         ]
       }
     ],
-    "description": "The `range()` function generates an immutable sequence of evenly spaced integers defined by start, stop, and step parameters, allowing efficient iteration and indexing without storing all values in memory."
+    "description": "The `range()` function generates an immutable sequence of numbers defined by start, stop, and step parameters, allowing efficient iteration and indexing without storing all values in memory."
   },
   {
     "name": "repr",
@@ -1556,7 +1556,7 @@
         ]
       }
     ],
-    "description": "repr() returns a printable string representation of an object, typically one that can be passed to eval() to recreate the object, or a descriptive placeholder if that is not possible."
+    "description": "repr() returns a string that provides an official printable representation of an object, ideally one that can be passed to eval() to recreate the object, or a descriptive placeholder if that isn’t possible."
   },
   {
     "name": "reversed",
@@ -1573,7 +1573,7 @@
         ]
       }
     ],
-    "description": "The reversed() function returns an iterator that yields the elements of a sequence or any object with a __reversed__() method in the opposite order from their original arrangement."
+    "description": "The `reversed()` function returns an iterator that yields the elements of a sequence or other iterable in the opposite order, requiring the object to implement a `__reversed__()` method or to support the sequence protocol via `__len__()` and integer-indexed `__getitem__()`."
   },
   {
     "name": "round",
@@ -1596,7 +1596,7 @@
         ]
       }
     ],
-    "description": "The `round()` function returns a number rounded to a specified number of decimal places (or to the nearest integer if no precision is given), using “bankers rounding” where ties are rounded to the nearest even value."
+    "description": "The round() function returns a number rounded to a specified number of decimal places (or to the nearest integer if no precision is given), using “bankers rounding” where ties are resolved toward the nearest even value."
   },
   {
     "name": "set",
@@ -1613,7 +1613,7 @@
         ]
       }
     ],
-    "description": "The set() function creates and returns a new mutable set object, optionally initializing it with elements drawn from a given iterable."
+    "description": "The set() function creates and returns a new set object, optionally populated with unique elements extracted from a given iterable."
   },
   {
     "name": "setattr",
@@ -1642,7 +1642,7 @@
         ]
       }
     ],
-    "description": "setattr(obj, name, value) dynamically assigns the given value to the specified attribute (or creates it) on the object, effectively performing the equivalent of the dot‑notation assignment obj.name = value."
+    "description": "setattr() assigns a specified value to a given attribute name on an object, functioning like the dot notation assignment (e.g., x.attr = value) but allowing the attribute name to be provided as a string."
   },
   {
     "name": "slice",
@@ -1682,7 +1682,7 @@
         ]
       }
     ],
-    "description": "The `slice()` function creates a slice object that encodes the start, stop, and step indices for slicing operations, allowing those indices to be stored, reused, and (as of Python 3.12) hashed."
+    "description": "The slice() function creates a slice object that encapsulates start, stop, and step values (defaulting to None) to define a range of indices for sequence slicing, and these objects are hashable when their components are hashable."
   },
   {
     "name": "start",
@@ -1692,7 +1692,7 @@
         "params": []
       }
     ],
-    "description": "The start() function initializes the class’s read‑only attributes using the supplied arguments or their defaults, enabling NumPy and other third‑party packages to access those values."
+    "description": "The `start()` function initializes the object's read‑only attributes with the provided arguments or their default values, making them available for NumPy and other third‑party packages."
   },
   {
     "name": "sorted",
@@ -1721,7 +1721,7 @@
         ]
       }
     ],
-    "description": "The `sorted()` function returns a new list containing the elements of an iterable ordered according to optional key and reverse parameters, while preserving the original order of equal items (stable sort)."
+    "description": "The sorted() function returns a new list containing the elements of an iterable ordered according to optional key and reverse arguments without modifying the original iterable."
   },
   {
     "name": "staticmethod",
@@ -1731,7 +1731,7 @@
         "params": []
       }
     ],
-    "description": "staticmethod() converts a regular function into a class‑level method that receives no implicit instance or class argument, allowing it to be called on the class or its instances like a plain function."
+    "description": "staticmethod() converts a regular function into a callable object that can be accessed on a class or its instances without receiving an implicit first argument (like self or cls)."
   },
   {
     "name": "str",
@@ -1805,7 +1805,7 @@
         ]
       }
     ],
-    "description": "The built-in `str()` function converts any given object into its string representation."
+    "description": "The `str()` function converts any given object into its string representation, returning that value as a plain text string."
   },
   {
     "name": "sum",
@@ -1828,7 +1828,7 @@
         ]
       }
     ],
-    "description": "The built‑in `sum()` function adds a start value to all numeric items of an iterable, processing them left‑to‑right, and returns the total."
+    "description": "The built‑in `sum()` function iteratively adds the elements of an iterable to an optional start value (default 0) and returns the resulting total."
   },
   {
     "name": "super",
@@ -1851,7 +1851,7 @@
         ]
       }
     ],
-    "description": "super() returns a proxy that searches the method‑resolution‑order after a specified class (or the current class when called without arguments) to delegate attribute or method lookups to the next parent or sibling class, enabling overridden methods to be accessed and supporting cooperative multiple inheritance."
+    "description": "super() returns a proxy that searches the method‑resolution order after a specified class (or the current class when used with zero arguments) to delegate calls to inherited or sibling methods, enabling concise parent method access and cooperative multiple inheritance."
   },
   {
     "name": "tuple",
@@ -1868,7 +1868,7 @@
         ]
       }
     ],
-    "description": "The tuple() function converts an iterable (or no argument) into an immutable sequence object of type tuple."
+    "description": "The `tuple()` function creates an immutable sequence object by converting an iterable (or returning an empty tuple when called without arguments)."
   },
   {
     "name": "type",
@@ -1914,7 +1914,7 @@
         ]
       }
     ],
-    "description": "The `type()` built‑in returns an object’s type when called with one argument, and when given three arguments (name, bases, dict) dynamically creates a new class object."
+    "description": "`type()` either returns the class of a given object when called with one argument, or dynamically creates a new class with a specified name, base classes, and attribute dictionary when called with three arguments."
   },
   {
     "name": "vars",
@@ -1935,7 +1935,7 @@
         ]
       }
     ],
-    "description": "The `vars()` function returns an object's attribute dictionary (its `__dict__`) or, when called without arguments, behaves like `locals()` to provide the current local symbol table."
+    "description": "vars() returns an object's attribute dictionary (its __dict__) or, when called without arguments, behaves like locals() to provide the current local symbol table."
   },
   {
     "name": "zip",
@@ -1958,7 +1958,7 @@
         ]
       }
     ],
-    "description": "zip() creates a lazy iterator that aggregates elements from multiple iterables into tuples, pairing the i‑th items together (stopping at the shortest iterable unless strict=True is used)."
+    "description": "zip() lazily combines multiple iterables element‑wise into tuples, stopping at the shortest iterable unless strict=True is used to enforce equal lengths."
   },
   {
     "name": "__import__",
@@ -1999,6 +1999,6 @@
         ]
       }
     ],
-    "description": "The built‑in __import__() function is the low‑level mechanism invoked by the import statement to locate and load a module (or package) using optional globals, locals, from‑list and level arguments, though direct use is discouraged in favor of importlib.import_module()."
+    "description": "The built‑in `__import__()` function performs the low‑level import operation invoked by the `import` statement, returning the top‑level module (or the specified module when a non‑empty fromlist is given) while allowing optional globals, locals, and relative‑import level arguments, but its direct use is discouraged in favor of `importlib.import_module()`."
   }
 ]

@@ -1,14 +1,20 @@
 import json
 from db import get_connection
 
-def load_functions(docs, conn):
+def load_functions(module_name, docs, conn, module_desc=""):
     with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO modules(name, description) VALUES(%s, %s)
+            ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description
+            RETURNING ID
+        """, (module_name, module_desc))
+        module_id = cur.fetchone()[0]
         for item in docs:
             cur.execute("""
-                INSERT INTO functions (name, description) VALUES (%s, %s)
-                ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description
+                INSERT INTO functions (module_id, name, description) VALUES (%s, %s, %s)
+                ON CONFLICT (module_id, name) DO UPDATE SET description = EXCLUDED.description
                 RETURNING id
-            """, (item["name"], item["description"]))
+            """, (module_id, item["name"], item["description"]))
 
             function_id = cur.fetchone()[0]
             cur.execute("DELETE FROM signatures WHERE function_id = %s", (function_id,))
@@ -29,6 +35,6 @@ if __name__ == "__main__":
         docs = json.load(f)
 
     conn = get_connection()
-    load_functions(docs, conn)
+    load_functions("builtins", docs, conn, "Python Built-in Functions")
     conn.close()
     print("Data loaded successfully!")

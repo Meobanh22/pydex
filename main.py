@@ -1,13 +1,13 @@
 import argparse
 
 from db import get_connection
-from scan_file import find_builtin_call, lookup_and_mark
+from scan_file import scan_file, lookup_and_mark
 
 def safe_str(value, default="N/A"):
     return str(value) if value is not None else default
 
 def cmd_scan(file_path):
-    result = find_builtin_call(file_path)
+    result = scan_file(file_path)
     if result is None:
         return
     if not result:
@@ -30,20 +30,20 @@ def cmd_search(args):
         return
     with conn.cursor() as cur:
         if args.by_arg:
-            query = """SELECT f.id, f.name, f.description, s.raw_signature, a.name, a.default_value, a.required, a.order_index
-                    FROM functions f LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id
+            query = """SELECT f.id, f.name, f.description, s.raw_signature, a.name, a.default_value, a.required, a.order_index, m.name
+                    FROM functions f LEFT JOIN modules m ON f.module_id=m.id LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id
                     WHERE a.name ILIKE %s AND f.discovered=True
-                    ORDER BY f.id, s.raw_signature, a.order_index"""
-            params = [args.function_name] 
+                    ORDER BY m.id, f.id, s.raw_signature, a.order_index"""
+            params = [args.function_name]
         else:
             name_condition = "f.name ILIKE %s" if args.partial else "f.name = %s"
             search_value = f"%{args.function_name}%" if args.partial else args.function_name
-            query = f"""SELECT f.id, f.name, f.description, s.raw_signature, a.name, a.default_value, a.required, a.order_index
-                        FROM functions f LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id 
+            query = f"""SELECT f.id, f.name, f.description, s.raw_signature, a.name, a.default_value, a.required, a.order_index, m.name
+                        FROM functions f LEFT JOIN modules m ON f.module_id=m.id LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id 
                         WHERE {name_condition} AND f.discovered=True"""
             if args.required:
                 query += " AND a.required=True"
-            query += " ORDER BY f.id, s.raw_signature, a.order_index"
+            query += " ORDER BY m.id, f.id, s.raw_signature, a.order_index"
             params = [search_value]
         cur.execute(query, params)
         rows = cur.fetchall()
@@ -51,10 +51,11 @@ def cmd_search(args):
             current_function_id = 0
             current_sig = ""
             for row in rows:
+                module = row[8]
                 if row[0] != current_function_id:
                     current_function_id = row[0]
                     current_sig = ""
-                    print(f"\nFunction(id: {row[0]}): {row[1]}")
+                    print(f"\nFunction(id: {row[0]}, module: {module}): {row[1]}")
                     print(f"Description: {row[2]}")
                 if row[3] != current_sig:
                     current_sig = row[3]
@@ -76,13 +77,22 @@ def cmd_open_pydex():
         print(f"Can't connect to database: {e}")
         return
     with conn.cursor() as cur:
-        cur.execute("""SELECT id, name FROM functions
+        cur.execute("""SELECT f.id, f.name, m.name FROM functions f
+                    LEFT JOIN modules m ON m.id=f.module_id
                     WHERE discovered=True
-                    ORDER BY id""")
+                    ORDER BY module_id, id""")
         rows = cur.fetchall()
         if rows:
-            print("Discovered Built-in Functions:")
+            print("Discovered functions:")
+            cur_module = ""
             for row in rows:
+                if cur_module != row[2]:
+                    cur_module = row[2]
+                    cur.execute("SELECT COUNT(*) FROM modules m LEFT JOIN functions f ON f.module_id=m.id WHERE m.name=%s", (row[2],))
+                    total = cur.fetchone()[0]
+                    cur.execute("SELECT COUNT(*) FROM modules m LEFT JOIN functions f ON f.module_id=m.id WHERE f.discovered=True AND m.name=%s", (row[2],))
+                    dis = cur.fetchone()[0]
+                    print(f"{cur_module}({dis}/{total}):")
                 print(f"{row[0]}.{row[1]}")
         else:
             print("No discovered built-in functions found.")

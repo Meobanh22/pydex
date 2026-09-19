@@ -73,7 +73,7 @@ def scan_file(file_path):
     except SyntaxError:
         print(f"Error: {file_path} has syntax error")
         return None
-    module = {'math', 'random', 'json'}
+    module = {'math', 'random', 'json', 'os', 'time', 're', 'shutil', 'csv', 'hashlib'}
     builtins = find_builtin_call(tree)
     module_map, func_map = build_import_maps(tree)
     stdlibs =  find_library_call(tree, module_map, func_map, module)

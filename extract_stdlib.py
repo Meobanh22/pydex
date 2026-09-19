@@ -45,10 +45,9 @@ def extract_module(module_name):
     return all_func_mod
 
 if __name__ == "__main__":
-    target_modules = ["math", "random", "json"]
+    target_modules = module = ['math', 'random', 'json', 'os', 'time', 're', 'shutil', 'csv', 'hashlib']
     conn = get_connection()
     for mod_name in target_modules:
-        print(f"{mod_name}")
         docs = extract_module(mod_name)
         load_functions(mod_name, docs, conn, f"Python {mod_name} standard library")
         print(f"Load {len(docs)} functions from {mod_name}!")

@@ -1,7 +1,7 @@
 [project]
 name = "pydex"
-version = "1.0"
-description = "Builtin python functions"
+version = "2.0"
+description = "Pokédex for Python functions and standard libraries"
 requires-python = ">=3.13"
 authors = [
     { name = "Meobanh" }
@@ -12,13 +12,14 @@ dependencies = [
     "psycopg2-binary",
     "python-dotenv",
     "requests",
+    "rich",
 ]
 
 [project.scripts]
 pydex = "main:main"
 
 [tool.setuptools]
-py-modules = ["db", "load_data", "main", "scan_file", "scrape_builtins"]
+py-modules = ["db", "load_data", "main", "scan_file", "scrape_builtins", "extract_stdlib"]
 
 [build-system]
 requires = ["setuptools"]

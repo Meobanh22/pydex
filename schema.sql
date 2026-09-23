@@ -11,6 +11,7 @@ CREATE TABLE functions (
     description TEXT,
     my_notes TEXT,
     discovered BOOLEAN DEFAULT FALSE,
+    is_important BOOLEAN DEFAULT FALSE,
     CONSTRAINT uq_func UNIQUE (module_id, name)
 );
 

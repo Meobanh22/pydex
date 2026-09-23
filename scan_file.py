@@ -58,9 +58,9 @@ def lookup_and_mark(names, conn):
                 func_id, discovered = row
                 if not discovered:
                     cur.execute("UPDATE functions SET discovered = TRUE WHERE id = %s", (func_id,))
-                    print(f"'{name}' is discovered!")
+                    print(f"✔ Discovered: {name[0]}.{name[1]}()")
             else:
-                print(f"Function '{name}' not found.")
+                print(f"✘ Function '{name[0]}.{name[1]}' not found in pydex.")
     conn.commit()
 
 def scan_file(file_path):
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     try:
         conn = get_connection()
     except Exception as e:
-        print(f"Can't connect to database: {e}")
+        print(f"Cannot connect to pydex: {e}")
         sys.exit(1)
     lookup_and_mark(result, conn)
     conn.close()

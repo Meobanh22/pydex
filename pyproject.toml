@@ -9,8 +9,6 @@ authors = [
 dependencies = [
     "beautifulsoup4",
     "groq",
-    "psycopg2-binary",
-    "python-dotenv",
     "requests",
     "rich",
 ]

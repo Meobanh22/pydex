@@ -50,18 +50,21 @@ def build_import_maps(tree):
     return module_map, func_map
 
 def lookup_and_mark(names, conn):
-    with conn.cursor() as cur:
+    cur = conn.cursor()
+    try:
         for name in names:
-            cur.execute("SELECT f.id, f.discovered FROM functions f LEFT JOIN modules m ON f.module_id = m.id WHERE f.name = %s AND m.name = %s", (name[1], name[0]))
+            cur.execute("SELECT f.id, f.discovered FROM functions f LEFT JOIN modules m ON f.module_id = m.id WHERE f.name = ? AND m.name = ?", (name[1], name[0]))
             row = cur.fetchone()
             if row:
                 func_id, discovered = row
                 if not discovered:
-                    cur.execute("UPDATE functions SET discovered = TRUE WHERE id = %s", (func_id,))
+                    cur.execute("UPDATE functions SET discovered = 1 WHERE id = ?", (func_id,))
                     print(f"✔ Discovered: {name[0]}.{name[1]}()")
             else:
                 print(f"✘ Function '{name[0]}.{name[1]}' not found in pydex.")
-    conn.commit()
+        conn.commit()
+    finally:
+        cur.close()
 
 def scan_file(file_path):
     try:

@@ -4,14 +4,15 @@ import json
 import time
 import re
 import os
-from dotenv import load_dotenv
 from groq import Groq
-from pathlib import Path
+import getpass
 
 DOCS_URL = "https://docs.python.org/3/library/functions.html"
 
-load_dotenv(dotenv_path=Path.home() / ".secrets" / "pydex.env", override=True)
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    api_key = getpass.getpass("Enter your GROQ_API_KEY: ")
+client = Groq(api_key=api_key)
 
 def summarize_description(name, description):
     response = client.chat.completions.create(

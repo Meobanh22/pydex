@@ -20,21 +20,22 @@ def cmd_scan(file_path, conn):
     console.print("[bold green]✨ Scan completed![/bold green]")
 
 def cmd_search(args, conn):
-    with conn.cursor() as cur:
+    cur = conn.cursor()
+    try:
         if args.by_arg:
             query = """SELECT f.id, f.name, f.description, f.my_notes, f.is_important, s.raw_signature, a.name, a.default_value, a.required, a.order_index, m.name
                     FROM functions f LEFT JOIN modules m ON f.module_id=m.id LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id
-                    WHERE a.name ILIKE %s AND f.discovered=True
+                    WHERE a.name LIKE ? AND f.discovered=1
                     ORDER BY m.id, f.id, s.raw_signature, a.order_index"""
             params = [args.function_name]
         else:
-            name_condition = "f.name ILIKE %s" if args.partial else "f.name = %s"
+            name_condition = "f.name LIKE ?" if args.partial else "f.name = ?"
             search_value = f"%{args.function_name}%" if args.partial else args.function_name
             query = f"""SELECT f.id, f.name, f.description, f.my_notes, f.is_important, s.raw_signature, a.name, a.default_value, a.required, a.order_index, m.name
                         FROM functions f LEFT JOIN modules m ON f.module_id=m.id LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id 
-                        WHERE {name_condition} AND f.discovered=True"""
+                        WHERE {name_condition} AND f.discovered=1"""
             if args.required:
-                query += " AND a.required=True"
+                query += " AND a.required=1"
             query += " ORDER BY m.id, f.id, s.raw_signature, a.order_index"
             params = [search_value]
         cur.execute(query, params)
@@ -90,9 +91,12 @@ def cmd_search(args, conn):
                 console.print()
         else:
             console.print(f"[bold red]✘ Function '[bold cyan]{args.function_name}[/bold cyan]' not found or not discovered yet.[/bold red]\n")
+    finally:
+        cur.close()
 
 def cmd_open_pydex(args, conn):
-    with conn.cursor() as cur:
+    cur = conn.cursor()
+    try:
         if not args.module_name:
             current_table = Table(box=box.ROUNDED, show_header=True, header_style="bold magenta")
             current_table.add_column("Module", justify="center", style="bold cyan")
@@ -100,9 +104,9 @@ def cmd_open_pydex(args, conn):
             current_table.add_column("Total", justify="center", style="blue")
             current_table.add_column("Progress", justify="center", style="bold yellow")
 
-            having_clause = "" if args.all else "HAVING COUNT(CASE WHEN f.discovered THEN 1 END) > 0"
+            having_clause = "" if args.all else "HAVING COUNT(CASE WHEN f.discovered = 1 THEN 1 END) > 0"
             cur.execute(f"""SELECT m.name, 
-                        COUNT(CASE WHEN f.discovered THEN 1 END) AS discovered,
+                        COUNT(CASE WHEN f.discovered = 1 THEN 1 END) AS discovered,
                         COUNT(f.id) AS total
                         FROM modules m 
                         LEFT JOIN functions f ON m.id = f.module_id 
@@ -117,12 +121,12 @@ def cmd_open_pydex(args, conn):
             if not args.all:
                 console.print("[yellow]💡 Tip: Use '[bold cyan]pydex open -a[/bold cyan]' to view all modules including 0% progress.[/yellow]\n")
         else:
-            filter_important = "" if args.all else "AND f.is_important = True"
+            filter_important = "" if args.all else "AND f.is_important = 1"
             cur.execute(f"""
                     SELECT f.id, f.name, f.my_notes, f.is_important
                     FROM functions f
                     LEFT JOIN modules m ON m.id=f.module_id
-                    WHERE f.discovered=True AND m.name=%s {filter_important}
+                    WHERE f.discovered=1 AND m.name=? {filter_important}
                     ORDER BY f.id
                     """, (args.module_name,))
             rows = cur.fetchall()
@@ -138,43 +142,52 @@ def cmd_open_pydex(args, conn):
                     console.print(f"   [yellow]#{func_id:>3}[/yellow] [bold green]✦ {func_name}[/bold green]{note_badge}")
             if not args.all:
                 console.print(f"[yellow]💡 Tip: Use '[bold cyan]pydex open {args.module_name} -a[/bold cyan]' to view all functions in module [bold cyan]{args.module_name}[/bold cyan].[/yellow]")
+    finally:
+        cur.close()
 
 def cmd_delete_function(args, conn):
-    with conn.cursor() as cur:
+    cur = conn.cursor()
+    try:
         if args.all:
             console.print("[bold yellow]Are you sure you want to delete all functions from pydex? (y/n):[/bold yellow]")
             response = input().lower()
             if response == "y":
-                cur.execute("Update functions SET discovered=False, my_notes=NULL")
+                cur.execute("UPDATE functions SET discovered=0, my_notes=NULL")
+                conn.commit()
                 console.print("[bold green]✔ All functions deleted from pydex.[/bold green]")
         elif args.function_name:
-            cur.execute("Update functions SET discovered=False, my_notes=NULL WHERE name=%s", (args.function_name,))
+            cur.execute("UPDATE functions SET discovered=0, my_notes=NULL WHERE name=?", (args.function_name,))
+            conn.commit()
             if cur.rowcount > 0:
                 console.print(f"[bold green]✔ Function '[bold cyan]{args.function_name}[/bold cyan]' deleted from pydex.[/bold green]")
             else:
                 console.print(f"[bold red]✘ Function '[bold cyan]{args.function_name}[/bold cyan]' not found in pydex.[/bold red]")
         else:
             console.print("[bold yellow]Please provide a function name.[/bold yellow]")
-        conn.commit()
+    finally:
+        cur.close()
 
 def cmd_note(args, conn):
-    with conn.cursor() as cur:
-        cur.execute("SELECT id, name, my_notes FROM functions WHERE name=%s AND discovered=True", (args.function_name,))
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id, name, my_notes FROM functions WHERE name=? AND discovered=1", (args.function_name,))
         row = cur.fetchone()
         if not row:
             console.print(f"[bold yellow]⚠ Function '[bold cyan]{args.function_name}[/bold cyan]' is not discovered yet.[/bold yellow]")
             return
         func_id, func_name, current_note = row
         if args.note:
-            cur.execute("UPDATE functions SET my_notes=%s WHERE id=%s", (args.note, func_id))
+            cur.execute("UPDATE functions SET my_notes=? WHERE id=?", (args.note, func_id))
             conn.commit()
             console.print(f"[bold green]✔ Saved note for function '[bold cyan]{func_name}[/bold cyan]'![/bold green]")
         elif args.clear:
-            cur.execute("UPDATE functions SET my_notes=NULL WHERE id=%s", (func_id,))
+            cur.execute("UPDATE functions SET my_notes=NULL WHERE id=?", (func_id,))
+            conn.commit()
             console.print(f"[bold green]✔ Cleared note for function '[bold cyan]{func_name}[/bold cyan]'![/bold green]")
         else:
             if current_note:
                 console.print(f"📝 [bold yellow]Note for '[bold cyan]{func_name}[/bold cyan]':[/bold yellow] [white]{current_note}[/white]")
             else:
                 console.print(f"[yellow]ℹ Function '[bold cyan]{func_name}[/bold cyan]' has no notes. Type '[bold cyan]pydex note {func_name} \"<note>\"[/bold cyan]' to add one![/yellow]")
-    conn.commit()
+    finally:
+        cur.close()

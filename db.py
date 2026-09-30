@@ -1,6 +1,8 @@
 import sqlite3
 from pathlib import Path
 
+CURRENT_DATA_VERSION = 1
+
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS modules (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,6 +47,20 @@ def get_connection() -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
     conn.execute("PRAGMA foreign_keys = ON;")
     conn.executescript(SCHEMA_SQL)
+
+    cur = conn.cursor()
+    try:
+        cur.execute("PRAGMA user_version")
+        db_version = cur.fetchone()[0]
+        if db_version < CURRENT_DATA_VERSION:
+            seed_file = Path(__file__).parent / "seed.sql"
+            if seed_file.exists():
+                with open(seed_file, "r", encoding="utf-8") as f:
+                    conn.executescript(f.read())
+            cur.execute(f"PRAGMA user_version = {CURRENT_DATA_VERSION}")
+            conn.commit()
+    finally:
+        cur.close()
     return conn
 
 if __name__ == "__main__":

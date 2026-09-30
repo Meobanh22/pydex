@@ -3,6 +3,33 @@ import builtins
 import inspect
 import sys
 from db import get_connection
+import os
+from pathlib import Path
+
+IGNORED_DIRS = {
+    "venv", ".venv", "env", ".env",
+    ".git", "__pycache__", ".pytest_cache", ".mypy_cache",
+    ".tox", ".nox", ".vscode", ".idea",
+    "build", "dist", "node_modules",
+} 
+
+def get_py_files(target_path):
+    target = Path(target_path)
+    if not target.exists():
+        return []
+    if target.is_file():
+        return [target] if target.suffix == ".py" else []
+    py_file = []
+    for root, dirs, files in os.walk(target):
+        dirs[:] = [
+            d for d in dirs if d not in IGNORED_DIRS
+            and not d.startswith(".")
+            and not d.endswith(".egg-info")
+        ]
+        for file in files:
+            if file.endswith(".py"):
+                py_file.append(Path(root) / file)
+    return sorted(py_file)
 
 def find_builtin_call(tree):
     builtins_name = {
@@ -16,7 +43,7 @@ def find_builtin_call(tree):
             func_name = node.func.id
             if func_name in builtins_name:
                 found.add(func_name)
-    return [("builtins", f"{name}") for name in found]
+    return tuple(("builtins", f"{name}") for name in found)
 
 def find_library_call(tree, module_map, func_map, module):
     found = set()
@@ -29,7 +56,7 @@ def find_library_call(tree, module_map, func_map, module):
             func_name = node.func.id
             if func_name in func_map and func_map[func_name][0] in module:
                 found.add((func_map[func_name][0], func_map[func_name][1]))
-    return list(found)
+    return tuple(found)
 
 def build_import_maps(tree):
     module_map = {}
@@ -49,56 +76,97 @@ def build_import_maps(tree):
                     func_map[alias.asname] = (node.module, alias.name)
     return module_map, func_map
 
-def lookup_and_mark(names, conn):
+def scan_target(target_path, conn):
+    target = Path(target_path)
+    if not target.exists():
+        return {"status": "not_found", "target": str(target_path)}
+
+    py_files = get_py_files(target)
+    if not py_files:
+        return {"status": "no_files", "target": str(target_path)}
+
     cur = conn.cursor()
     try:
-        for name in names:
-            cur.execute("SELECT f.id, f.discovered FROM functions f LEFT JOIN modules m ON f.module_id = m.id WHERE f.name = ? AND m.name = ?", (name[1], name[0]))
-            row = cur.fetchone()
-            if row:
-                func_id, discovered = row
-                if not discovered:
-                    cur.execute("UPDATE functions SET discovered = 1 WHERE id = ?", (func_id,))
-                    print(f"✔ Discovered: {name[0]}.{name[1]}()")
-            else:
-                print(f"✘ Function '{name[0]}.{name[1]}' not found in pydex.")
-        conn.commit()
+        cur.execute("SELECT name FROM modules WHERE name != 'builtins'")
+        valid_modules = { row[0] for row in cur.fetchall()}
     finally:
         cur.close()
+    total_calls = 0
+    detected_pairs = []
+    for fpath in py_files:
+        calls = scan_file(fpath, valid_modules)
+        total_calls += len(calls)
+        detected_pairs.extend(calls)
+    unique_pairs = sorted(set(detected_pairs))
+    newly_discovered = []
+    already_discovered = []
+    if unique_pairs:
+        cur = conn.cursor()
+        try:
+            for mod_name, func_name in unique_pairs:
+                cur.execute("""SELECT f.id, f.discovered, f.is_important
+                            FROM functions f JOIN modules m ON f.module_id = m.id
+                            WHERE m.name = ? AND f.name = ?""", (mod_name, func_name))
+                row = cur.fetchone()
+                if row:
+                    func_id, discorved, is_important = row
+                    item = {
+                        "id": func_id,
+                        "module": mod_name,
+                        "name": func_name,
+                        "is_important": bool(is_important)
+                    }
+                    if not discorved:
+                        cur.execute("UPDATE functions SET discovered = 1 WHERE id = ?", (func_id,))
+                        newly_discovered.append(item)
+                    else:
+                        already_discovered.append(item)
+            conn.commit()
+        finally:
+            cur.close()
+    return {
+        "status": "ok",
+        "target": str(target_path),
+        "file_count": len(py_files),
+        "total_calls": total_calls,
+        "newly_discovered": newly_discovered,
+        "already_discovered": already_discovered,
+    }
 
-def scan_file(file_path):
+def scan_file(file_path, valid_modules=None):
+    if valid_modules is None:
+        valid_modules = {"math", "random", "json", "os",
+                         "time", "re", "shutil", "csv", "hashlib"}
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             tree = ast.parse(f.read())
-    except FileNotFoundError:
-        print(f"Error: {file_path} does not exist")
-        return None
-    except SyntaxError:
-        print(f"Error: {file_path} has syntax error")
-        return None
-    module = {'math', 'random', 'json', 'os', 'time', 're', 'shutil', 'csv', 'hashlib'}
+    except (FileNotFoundError, SyntaxError, UnicodeDecodeError):
+        return []
     builtins = find_builtin_call(tree)
     module_map, func_map = build_import_maps(tree)
-    stdlibs =  find_library_call(tree, module_map, func_map, module)
-    result = builtins + stdlibs
-    return result
+    stdlibs =  find_library_call(tree, module_map, func_map, valid_modules)
+    return builtins + stdlibs
 
 if __name__ == "__main__":
-    if len(sys.argv) <2:
-        print("Usage: python scan_file.py <file_path>") 
-        sys.exit(1)
-    file_path = sys.argv[1]
-    result = scan_file(file_path)
-    if result is None:
-        sys.exit(1)
-    if not result:
-        print("No built-in functions found in file")
-        sys.exit(1)
+    target = sys.argv[1] if len(sys.argv) > 1 else "."
     try:
         conn = get_connection()
     except Exception as e:
         print(f"Cannot connect to pydex: {e}")
         sys.exit(1)
-    lookup_and_mark(result, conn)
+    result = scan_target(target, conn)
     conn.close()
+
+    if result["status"] == "not_found":
+        print(f"Target path does not exist: {target}")
+        sys.exit(1)
+    if result["status"] == "no_files":
+        print(f"No Python files found in: {target}")
+        sys.exit(1)
+    
+    for item in result["newly_discovered"]:
+        star = "★ " if item["is_important"] else "✦ "
+        print(f"{star}Discovered: {item['module']}.{item['name']}()")
+    print(f"\nScan completed! Scanned {result['file_count']} file(s).")
+    print(f"Total calls: {result['total_calls']}, New: {len(result['newly_discovered'])}, Already known: {len(result['already_discovered'])}")
     print("Scan completed!")

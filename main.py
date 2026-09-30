@@ -13,7 +13,7 @@ def main():
     
     # scan command
     scan_parser = subparsers.add_parser("scan", help="Scan a Python file to find functions.")
-    scan_parser.add_argument("file_path", help="Path to the Python file to scan.")
+    scan_parser.add_argument("target_path", nargs="?", default=".", help="Path to the Python file or directory to scan (default: current directory).")
     
     # search command
     search_parser = subparsers.add_parser("search", help="Search for a function in pydex.")
@@ -47,7 +47,7 @@ def main():
 
     try:
         if args.command == "scan":
-            cmd_scan(args.file_path, conn)
+            cmd_scan(args.target_path, conn)
         elif args.command == "search":
             cmd_search(args, conn)
         elif args.command == "open":

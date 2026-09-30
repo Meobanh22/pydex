@@ -2,22 +2,63 @@ from rich.console import Console
 from rich.table import Table
 from rich import box
 from rich.panel import Panel
-from scan_file import lookup_and_mark, scan_file
+from scan_file import scan_target
 
 console = Console()
 
 def safe_str(value, default="N/A"):
     return str(value) if value is not None else default
 
-def cmd_scan(file_path, conn):
-    result = scan_file(file_path)
-    if result is None:
+def cmd_scan(target_path, conn):
+    result = scan_target(target_path, conn)
+    if result["status"] == "not_found":
+        console.print(f"[bold red]✘ Path '[bold cyan]{result['target']}[/bold cyan]' does not exist.[/bold red]\n")
         return
-    if not result:
-        console.print("[bold yellow]⚠ No functions found in the file.[/bold yellow]")
+    if result["status"] == "no_files":
+        console.print(f"[bold yellow]⚠ No Python (.py) files found in '[bold cyan]{result['target']}[/bold cyan]'.[/bold yellow]\n")
         return
-    lookup_and_mark(result, conn)
-    console.print("[bold green]✨ Scan completed![/bold green]")
+    newly = result["newly_discovered"]
+    already = result["already_discovered"]
+    new_count = len(newly)
+    already_count = len(already)
+    distinct_count = new_count + already_count
+
+    if newly:
+        console.print()
+        for item in newly:
+            mod_name = item["module"]
+            func_name = item["name"]
+            func_id = item["id"]
+            if item["is_important"]:
+                console.print(f"   [bold yellow]★ Unlocked Core:[/] [bold cyan]{mod_name}.{func_name}()[/bold cyan] [yellow]#{func_id}[/yellow]")
+            else:
+                console.print(f"   [bold green]✦ Unlocked:[/] [bold cyan]{mod_name}.{func_name}()[/bold cyan] [yellow]#{func_id}[/yellow]")
+        console.print()
+
+    summary_table = Table.grid(padding=(0,2))
+    summary_table.add_column(style="bold white")
+    summary_table.add_column(style="cyan")
+    file_label = f"[bold yellow]{result["file_count"]}[/bold yellow] file{"s" if result["file_count"]>1 else ""}"
+    summary_table.add_row("Target path:",f"[bold cyan]{result["target"]} [/bold cyan]({file_label})")
+    summary_table.add_row("Total calls detected:", f"[white]{result["total_calls"]}[/white]")
+
+    new_style = f"[bold green]{new_count} 🎉[/bold green]" if new_count > 0 else "[white]0[/white]"
+    summary_table.add_row("Newly unlocked:", new_style)
+    summary_table.add_row("Already in pydex:", f"[white]{already_count}[/white]")
+    summary_table.add_row("Distinct functions:", f"[bold cyan]{distinct_count}[/bold cyan]")
+    panel = Panel(
+        summary_table,
+        title="[bold yellow]✨ Scan Summary[/bold yellow]",
+        box=box.ROUNDED,
+        expand=False
+    )
+    console.print(panel)
+    if new_count > 0:
+        console.print(f"[bold green]🎉 Great job! You unlocked [bold yellow]{new_count}[/bold yellow] new function{'s' if new_count > 1 else ''} in your pydex![/bold green]\n")
+    elif distinct_count > 0:
+        console.print(f"[yellow]★ All {distinct_count} detected functions were already in your pydex.[/yellow]\n")
+    else:
+        console.print("[yellow]⚠ No functions detected in the scanned file(s).[/yellow]\n")
 
 def cmd_search(args, conn):
     cur = conn.cursor()

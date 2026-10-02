@@ -1,24 +1,32 @@
 [project]
 name = "pydex"
 version = "2.0"
-description = "Pydex for Python functions and standard libraries"
-requires-python = ">=3.13"
+description = "CLI tool for exploring and mastering Python standard libraries."
+readme = "README.md"
+requires-python = ">=3.10"
 authors = [
     { name = "Meobanh" }
 ]
 dependencies = [
+    "rich",
+]
+
+[project.optional-dependencies]
+dev = [
     "beautifulsoup4",
     "groq",
     "requests",
-    "rich",
 ]
 
 [project.scripts]
 pydex = "main:main"
 
 [tool.setuptools]
-py-modules = ["db", "load_data", "main", "scan_file", "scrape_builtins", "extract_stdlib", "commands"]
+py-modules = ["main", "commands", "scan_file", "db"]
+
+[tool.setuptools.package-data]
+"*" = ["seed.sql"]
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"

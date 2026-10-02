@@ -147,8 +147,8 @@ def cmd_open_pydex(args, conn):
 
             cur.execute("""
                 SELECT m.name, 
-                    COUNT(CASE WHEN f.discovered = 1 THEN 1 END) AS discovered,
-                    COUNT(f.id) AS total
+                       COUNT(CASE WHEN f.discovered = 1 THEN 1 END) AS discovered,
+                       COUNT(f.id) AS total
                 FROM modules m 
                 LEFT JOIN functions f ON m.id = f.module_id 
                 GROUP BY m.id, m.name
@@ -177,6 +177,29 @@ def cmd_open_pydex(args, conn):
             console.print(current_table)
             if not args.all:
                 console.print("[yellow]💡 Tip: Use '[bold cyan]pydex open -a[/bold cyan]' to view all modules including 0% progress.[/yellow]\n")
+
+        else:
+            filter_important = "" if args.all else "AND f.is_important = 1"
+            cur.execute(f"""
+                    SELECT f.id, f.name, f.my_notes, f.is_important
+                    FROM functions f
+                    LEFT JOIN modules m ON m.id=f.module_id
+                    WHERE f.discovered=1 AND m.name=? {filter_important}
+                    ORDER BY f.id
+                    """, (args.module_name,))
+            rows = cur.fetchall()
+            if not rows:
+                console.print(f"[bold yellow]⚠ No discovered functions found in module '[bold cyan]{args.module_name}[/bold cyan]'.[/bold yellow]\n")
+                return
+            for row in rows:
+                func_id, func_name, note, important = row
+                note_badge = " 📝" if note else ""
+                if important:
+                    console.print(f"   [yellow]#{func_id:>3}[/yellow] [bold yellow]★ {func_name}[/bold yellow]{note_badge}")
+                else:
+                    console.print(f"   [yellow]#{func_id:>3}[/yellow] [bold green]✦ {func_name}[/bold green]{note_badge}")
+            if not args.all:
+                console.print(f"[yellow]💡 Tip: Use '[bold cyan]pydex open {args.module_name} -a[/bold cyan]' to view all functions in module [bold cyan]{args.module_name}[/bold cyan].[/yellow]")
     finally:
         cur.close()
 

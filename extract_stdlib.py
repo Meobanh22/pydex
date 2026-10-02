@@ -3,15 +3,22 @@ import importlib
 from db import get_connection
 from load_data import load_functions
 
+def is_valid_callable(obj):
+    if not callable(obj) or inspect.ismodule(obj):
+        return False
+    if isinstance(obj, type) and issubclass(obj, BaseException):
+        return False
+    return True
+
 def extract_module(module_name):
     mod = importlib.import_module(module_name)
     all_func_mod = []
     functions = [
-        (name, obj) for name, obj in inspect.getmembers(mod, inspect.isroutine)
+        (name, obj) for name, obj in inspect.getmembers(mod, is_valid_callable)
         if not name.startswith("_")
     ]
     for function in functions:
-        name, obj=function
+        name, obj = function
         try:
             sig = inspect.signature(obj)
             raw_sig = f"{name}{sig}"
@@ -27,10 +34,11 @@ def extract_module(module_name):
                     "required": required,
                     "order_index": idx
                 })
-                idx+=1
+                idx += 1
         except (ValueError, TypeError):
             raw_sig = f"{name}()"
             params = []
+
         doc = obj.__doc__ or ""
         first_line = doc.strip().split("\n")[0] if doc else "No description available"
         signatures=[{
@@ -45,7 +53,8 @@ def extract_module(module_name):
     return all_func_mod
 
 if __name__ == "__main__":
-    target_modules = module = ['math', 'random', 'json', 'os', 'time', 're', 'shutil', 'csv', 'hashlib']
+    target_modules = module = ['math', 'random', 'json', 'os', 'time', 're', 'shutil', 'csv', 'hashlib',
+                               'datetime', 'collections', 'itertools', 'functools', 'pathlib', 'copy', 'sys']
     conn = get_connection()
     for mod_name in target_modules:
         docs = extract_module(mod_name)

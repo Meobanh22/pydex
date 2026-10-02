@@ -145,44 +145,38 @@ def cmd_open_pydex(args, conn):
             current_table.add_column("Total", justify="center", style="blue")
             current_table.add_column("Progress", justify="center", style="bold yellow")
 
-            having_clause = "" if args.all else "HAVING COUNT(CASE WHEN f.discovered = 1 THEN 1 END) > 0"
-            cur.execute(f"""SELECT m.name, 
-                        COUNT(CASE WHEN f.discovered = 1 THEN 1 END) AS discovered,
-                        COUNT(f.id) AS total
-                        FROM modules m 
-                        LEFT JOIN functions f ON m.id = f.module_id 
-                        GROUP BY m.id, m.name {having_clause}
-                        ORDER BY m.id""")
-            rows = cur.fetchall()
-            for module_name, discovered, total in rows:
+            cur.execute("""
+                SELECT m.name, 
+                    COUNT(CASE WHEN f.discovered = 1 THEN 1 END) AS discovered,
+                    COUNT(f.id) AS total
+                FROM modules m 
+                LEFT JOIN functions f ON m.id = f.module_id 
+                GROUP BY m.id, m.name
+                ORDER BY m.id
+            """)
+            all_rows = cur.fetchall()
+
+            total_disc = sum(r[1] for r in all_rows)
+            total_all = sum(r[2] for r in all_rows)
+            overall_pct = f"{round(total_disc / total_all * 100, 1)}%" if total_all > 0 else "0.0%"
+
+            display_rows = all_rows if args.all else [r for r in all_rows if r[1] > 0]
+
+            for module_name, discovered, total in display_rows:
                 pct = f"{round(discovered / total * 100, 1)}%" if total > 0 else "0.0%"
                 current_table.add_row(module_name, str(discovered), str(total), pct)
+
+            current_table.add_section()
+            current_table.add_row(
+                "[bold white]Total[/bold white]",
+                f"[bold green]{total_disc}[/bold green]",
+                f"[bold blue]{total_all}[/bold blue]",
+                f"[bold yellow]{overall_pct}[/bold yellow]"
+            )
 
             console.print(current_table)
             if not args.all:
                 console.print("[yellow]💡 Tip: Use '[bold cyan]pydex open -a[/bold cyan]' to view all modules including 0% progress.[/yellow]\n")
-        else:
-            filter_important = "" if args.all else "AND f.is_important = 1"
-            cur.execute(f"""
-                    SELECT f.id, f.name, f.my_notes, f.is_important
-                    FROM functions f
-                    LEFT JOIN modules m ON m.id=f.module_id
-                    WHERE f.discovered=1 AND m.name=? {filter_important}
-                    ORDER BY f.id
-                    """, (args.module_name,))
-            rows = cur.fetchall()
-            if not rows:
-                console.print(f"[bold yellow]⚠ No discovered functions found in module '[bold cyan]{args.module_name}[/bold cyan]'.[/bold yellow]\n")
-                return
-            for row in rows:
-                func_id, func_name, note, important = row
-                note_badge = " 📝" if note else ""
-                if important:
-                    console.print(f"   [yellow]#{func_id:>3}[/yellow] [bold yellow]★ {func_name}[/bold yellow]{note_badge}")
-                else:
-                    console.print(f"   [yellow]#{func_id:>3}[/yellow] [bold green]✦ {func_name}[/bold green]{note_badge}")
-            if not args.all:
-                console.print(f"[yellow]💡 Tip: Use '[bold cyan]pydex open {args.module_name} -a[/bold cyan]' to view all functions in module [bold cyan]{args.module_name}[/bold cyan].[/yellow]")
     finally:
         cur.close()
 

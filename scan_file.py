@@ -31,6 +31,17 @@ def get_py_files(target_path):
                 py_file.append(Path(root) / file)
     return sorted(py_file)
 
+def get_dotted_name(node):
+    parts = []
+    curr = node
+    while isinstance(curr, ast.Attribute):
+        parts.append(curr.attr)
+        curr = curr.value
+    if isinstance(curr, ast.Name):
+        parts.append(curr.id)
+        return ".".join(reversed(parts))
+    return None
+
 def find_builtin_call(tree):
     builtins_name = {
         name for name, obj in builtins.__dict__.items()
@@ -45,17 +56,37 @@ def find_builtin_call(tree):
                 found.add(func_name)
     return tuple(("builtins", f"{name}") for name in found)
 
-def find_library_call(tree, module_map, func_map, module):
+def find_library_call(tree, module_map, func_map, valid_modules):
     found = set()
     for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
-            func_name = node.func.attr
-            if isinstance(node.func.value, ast.Name) and node.func.value.id in module_map and module_map[node.func.value.id] in module:
-                found.add((module_map[node.func.value.id], func_name))
-        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-            func_name = node.func.id
-            if func_name in func_map and func_map[func_name][0] in module:
-                found.add((func_map[func_name][0], func_map[func_name][1]))
+        if not isinstance(node, ast.Call):
+            continue
+
+        dotted_name = get_dotted_name(node.func)
+        if not dotted_name:
+            continue
+        if "." not in dotted_name:
+            if dotted_name in func_map:
+                mod_name, func_name = func_map[dotted_name]
+                if mod_name in valid_modules:
+                    found.add((mod_name, func_name))
+        else:
+            prefix, func_name = dotted_name.rsplit(".", 1)
+            if prefix in module_map and module_map[prefix] in valid_modules:
+                found.add((module_map[prefix], func_name))
+            elif "." in prefix:
+                top_pkg, sub_part = prefix.split(".", 1)
+                if top_pkg in module_map:
+                    resolved_mod = f"{module_map[top_pkg]}.{sub_part}"
+                    if resolved_mod in valid_modules:
+                        found.add((resolved_mod, func_name))
+                    elif module_map[top_pkg] in valid_modules:
+                        sub_cls = sub_part.split(".", 1)[0]
+                        found.add((module_map[top_pkg], sub_cls))
+            elif prefix in func_map:
+                parent_mod, parent_name = func_map[prefix]
+                if parent_mod in valid_modules:
+                    found.add((parent_mod, parent_name))
     return tuple(found)
 
 def build_import_maps(tree):
@@ -64,16 +95,15 @@ def build_import_maps(tree):
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.asname == None:
-                    module_map[alias.name] = alias.name
-                else:
-                    module_map[alias.asname] = alias.name
+                target = alias.asname if alias.asname is not None else alias.name
+                module_map[target] = alias.name
         elif isinstance(node, ast.ImportFrom):
             for alias in node.names:
-                if alias.asname==None:
-                    func_map[alias.name] = (node.module, alias.name)
-                else:
-                    func_map[alias.asname] = (node.module, alias.name)
+                target = alias.asname if alias.asname is not None else alias.name
+                func_map[target] = (node.module, alias.name)
+                # submodule import, e.g., from os import path
+                full_submod = f"{node.module}.{alias.name}"
+                module_map[target] = full_submod
     return module_map, func_map
 
 def scan_target(target_path, conn):

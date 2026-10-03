@@ -54,7 +54,8 @@ def extract_module(module_name):
 
 if __name__ == "__main__":
     target_modules = module = ['math', 'random', 'json', 'os', 'time', 're', 'shutil', 'csv', 'hashlib',
-                               'datetime', 'collections', 'itertools', 'functools', 'pathlib', 'copy', 'sys']
+                               'datetime', 'collections', 'itertools', 'functools', 'pathlib', 'copy', 'sys',
+                               'os.path']
     conn = get_connection()
     for mod_name in target_modules:
         docs = extract_module(mod_name)

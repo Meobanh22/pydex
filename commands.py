@@ -3,6 +3,7 @@ from rich.table import Table
 from rich import box
 from rich.panel import Panel
 from scan_file import scan_target
+import difflib
 
 console = Console()
 
@@ -67,7 +68,7 @@ def cmd_search(args, conn):
             query = """SELECT f.id, f.name, f.description, f.my_notes, f.is_important, s.raw_signature, a.name, a.default_value, a.required, a.order_index, m.name
                     FROM functions f LEFT JOIN modules m ON f.module_id=m.id LEFT JOIN signatures s ON f.id=s.function_id LEFT JOIN arguments a ON s.id=a.signature_id
                     WHERE a.name LIKE ? AND f.discovered=1
-                    ORDER BY m.id, f.id, s.raw_signature, a.order_index"""
+                    ORDER BY f.is_important DESC, m.id, f.id, s.raw_signature, a.order_index"""
             params = [args.function_name]
         else:
             name_condition = "f.name LIKE ?" if args.partial else "f.name = ?"
@@ -77,7 +78,7 @@ def cmd_search(args, conn):
                         WHERE {name_condition} AND f.discovered=1"""
             if args.required:
                 query += " AND a.required=1"
-            query += " ORDER BY m.id, f.id, s.raw_signature, a.order_index"
+            query += " ORDER BY f.is_important DESC, m.id, f.id, s.raw_signature, a.order_index"
             params = [search_value]
         cur.execute(query, params)
         rows = cur.fetchall()
@@ -86,6 +87,24 @@ def cmd_search(args, conn):
             current_sig = ""
             current_table = None
 
+            rest = []
+            seen_rest = set()
+            if args.by_arg or args.partial:
+                limit_row = []
+                displayed_funcs = set()
+                for row in rows:
+                    func_name, is_important, module = row[1], row[4], row[10]
+                    if (module, func_name) in displayed_funcs:
+                        limit_row.append(row)
+                    elif len(displayed_funcs) < 2:
+                        displayed_funcs.add((module, func_name))
+                        limit_row.append(row)
+                    else:
+                        if (module, func_name) not in seen_rest:
+                            seen_rest.add((module, func_name))
+                            rest.append((module, func_name, is_important))
+                rows = limit_row
+            
             for row in rows:
                 func_id, func_name, desc, my_notes, is_important, sig, arg_name, default_val, required, order_idx, module = row
                 
@@ -130,8 +149,24 @@ def cmd_search(args, conn):
             if current_table:
                 console.print(current_table)
                 console.print()
+            if rest:
+                displayed_rest = rest[:5]
+                preview = ", ".join(
+                    f"[bold yellow]★ {m}.{f}[/bold yellow]" if imp else f"[bold green]✦ {m}.{f}[/bold green]"
+                    for m, f, imp in displayed_rest
+                )
+                more_suffix = f" [dim](+{len(rest) - 5} more)[/dim]" if len(rest) > 5 else ""
+                console.print(f"👉 [yellow]Other functions found:[/] {preview}{more_suffix}\n")
         else:
             console.print(f"[bold red]✘ Function '[bold cyan]{args.function_name}[/bold cyan]' not found or not discovered yet.[/bold red]\n")
+            cur.execute("SELECT name FROM functions WHERE discovered=1")
+            discovered_functions = [row[0] for row in cur.fetchall()]
+            close_matches = difflib.get_close_matches(args.function_name, discovered_functions, n=3, cutoff=0.5)
+            if close_matches:
+                sug_str = ", ".join(f"[bold cyan]{match}[/bold cyan]" for match in close_matches)
+                console.print(f"[yellow]💡 Did you mean:[/] {sug_str}?\n")
+            else:
+                console.print()
     finally:
         cur.close()
 
